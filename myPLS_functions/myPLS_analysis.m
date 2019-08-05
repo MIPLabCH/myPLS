@@ -21,16 +21,16 @@ function res = myPLS_analysis(input,pls_opts)
 %              2 = zscore within groups (default)
 %              3 = std normalization across subjects (no centering)
 %              4 = std normalization within groups (no centering)
-%       - .grouped_PLS         : binary variable indicating if groups
+%       - [.grouped_PLS]       : binary variable indicating if groups
 %                                should be considered when computing R
-%              0 = PLS will computed over all subjects
+%              0 = PLS will computed over all subjects [only option for contrast PLS] 
 %              1 = R will be constructed by concatenating group-wise
-%                  covariance matrices ( as in conventional behavior PLS)
-%       - .boot_procrustes_mod : mode for bootstrapping procrustes transform
-%              1 = standard (rotation computed only on U)
+%                  covariance matrices [default for behavior PLS]
+%       - [.boot_procrustes_mod]: mode for bootstrapping procrustes transform
+%              1 = standard (rotation computed only on U) [default]
 %              2 = average rotation of U and V
 %       - [.behav_type]        : Type of behavioral analysis
-%              'behavior' for standard behavior PLS
+%              'behavior' for standard behavior PLS [default]
 %              'contrast' to simply compute contrast between two groups
 %              'contrastBehav' to combine contrast and behavioral measures)
 %              'contrastBehavInteract' to also consider group-by-behavior interaction effects
@@ -108,12 +108,12 @@ end
 explCovLC = (diag(S).^2) / sum(diag(S.^2));
 
 
-% %% Permutation testing for LV significance
-% % !!! permutations should be run using the already normalized X and Y !!!
-% Sp_vect = myPLS_permut(X,Y,U,subj_grouping_analysis,pls_opts);
-% 
-% % compute the p-values from the permutation null distribution
-% myLCpvals = myPLS_getLCpvals(Sp_vect,S,pls_opts);
+%% Permutation testing for LV significance
+% !!! permutations should be run using the already normalized X and Y !!!
+Sp_vect = myPLS_permut(X,Y,U,input.grouping,pls_opts);
+
+% compute the p-values from the permutation null distribution
+myLCpvals = myPLS_getLCpvals(Sp_vect,S,pls_opts);
 % 
 % %% Bootstrapping to test stability of brain saliences
 % % !!! use non-normalized X0 and Y0, normalization will be done again because of resampling WITH replacement !!!
@@ -131,7 +131,8 @@ res.U=U;
 res.S=S;
 res.V=V;
 res.explCovLC=explCovLC;
-% res.myLCpvals=myLCpvals;
+% res.Sp_vect=Sp_vect; % do we need to save this?
+res.myLCpvals=myLCpvals;
 % res.Ub_vect=Ub_vect;
 % res.Vb_vect=Vb_vect;
 

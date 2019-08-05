@@ -25,6 +25,14 @@
 %              0 = PLS will computed over all subjects
 %              1 = R will be constructed by concatenating group-wise
 %                  covariance matrices ( as in conventional behavior PLS)
+%       - .grouped_perm : binary variable indicating if groups should be 
+%               considered during the permutations
+%              0 = permutations ignoring grouping
+%              1 = permutations within group
+%       - .grouped_boot : binary variable indicating if groups should be 
+%               considered during bootstrapping
+%              0 = bootstrapping ignoring grouping
+%              1 = bootstrapping within group
 %       - .boot_procrustes_mod : mode for bootstrapping procrustes transform
 %              1 = standard (rotation computed only on U)
 %              2 = average rotation of U and V
@@ -112,6 +120,17 @@ pls_opts.normalization_behav=1;
 % 1: R will be constructed by concatenating group-wise covariance matrices
 %     (as in conventional behavior PLS, see Krishnan et al., 2011)
 pls_opts.grouped_PLS=0; 
+
+
+% --- Permutations grouping option ---
+% 0: permutations ignoring grouping
+% 1: permutations within group
+pls_opts.grouped_perm=0;
+
+% --- Bootstrapping grouping option ---
+% 0: bootstrapping ignoring grouping
+% 1: bootstrapping within group
+pls_opts.grouped_boot=0;
 
 % --- Mode for bootstrapping procrustes transform ---
 % in some cases, rotation only depending on U results in extremely low
