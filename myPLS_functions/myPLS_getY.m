@@ -1,8 +1,8 @@
 function [Y0,design_names,nDesignScores] = myPLS_getY(behavMode,...
-    behaviorData,subj_grouping,groupnames,behav_names)
+    behaviorData,grouping,group_names,behav_names)
 
 % number and IDs of groups
-groupIDs=unique(subj_grouping);
+groupIDs=unique(grouping);
 nGroups=length(groupIDs);
 
 % number of behavior scores
@@ -11,6 +11,13 @@ nBehav=size(behaviorData,2);
 % number of subjects
 nSubj = size(behaviorData,1); 
 
+% set up size of behav_names and group_names (1x N)
+if size(behav_names,1)>size(behav_names,2)
+    behav_names=behav_names';
+end
+if size(group_names,1)>size(group_names,2)
+    group_names=group_names';
+end
 
 %% compute contrast, if necessary
 % contrasts are implemented for up to 3 groups, for 3-group analysis see
@@ -20,8 +27,8 @@ if contains(behavMode,'contrast')
         error('There is only one group - contrasts are only implemented for 2 or 3 groups');
     elseif nGroups==2
         % grouping vectors
-        group1ID=subj_grouping==groupIDs(1);nGroup1=nnz(group1ID);
-        group2ID=subj_grouping==groupIDs(2);nGroup2=nnz(group2ID);
+        group1ID=grouping==groupIDs(1);nGroup1=nnz(group1ID);
+        group2ID=grouping==groupIDs(2);nGroup2=nnz(group2ID);
 
         % contrast
         c = zeros(nSubj,1);
@@ -34,13 +41,13 @@ if contains(behavMode,'contrast')
         if sign(c(1))~=sign(c_orig(1)); c = -c; end % correct the sign if switched after norm 
 
         % specify the name of the contrast
-        contrastName={['contrast (' groupnames{groupIDs(2)}...
-            ' > ' groupnames{groupIDs(1)} ')']};
+        contrastName={['contrast (' group_names{2}...
+            ' > ' group_names{1} ')']};
     elseif nGroups==3
         % grouping vectors
-        group1ID=subj_grouping==groupIDs(1);nGroup1=nnz(group1ID);
-        group2ID=subj_grouping==groupIDs(2);nGroup2=nnz(group2ID);
-        group3ID=subj_grouping==groupIDs(2);nGroup3=nnz(group3ID);
+        group1ID=grouping==groupIDs(1);nGroup1=nnz(group1ID);
+        group2ID=grouping==groupIDs(2);nGroup2=nnz(group2ID);
+        group3ID=grouping==groupIDs(2);nGroup3=nnz(group3ID);
 
         % contrast
         c = zeros(nSubj,2);
@@ -58,12 +65,12 @@ if contains(behavMode,'contrast')
         if sign(c(1,2))~=sign(c_orig(1,2)); c(:,2) = -c(:,2); end  % correct the sign if switched after norm 
         
         % specify the name of the contrast
-        contrastName={['contrast (' groupnames{3} ...
-            '>' groupnames{1}...
-            '/' groupnames{2} ...
+        contrastName={['contrast (' group_names{3} ...
+            '>' group_names{1}...
+            '/' group_names{2} ...
              ')'],...
-            ['contrast (' groupnames{2}...
-            '>' groupnames{1} ')']};
+            ['contrast (' group_names{2}...
+            '>' group_names{1} ')']};
     else
         error('There are more than 3 groups - contrasts are only implemented for 2 or 3 groups');
     end
@@ -91,7 +98,7 @@ switch behavMode
             Y0=[];
             for iBeh = 1:nBehav
                 % behavior data
-                Y0(:,2*iBeh-1)=behaviorData(iBeh);
+                Y0(:,2*iBeh-1)=behaviorData(:,iBeh);
                 
                 % normalization before interaction calculation
                 Y0(:,2*iBeh)=zscore(Y0(:,2*iBeh-1)); 

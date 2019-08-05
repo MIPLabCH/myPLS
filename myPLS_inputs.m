@@ -5,17 +5,12 @@
 %   - input : struct containing input data for the analysis
 %       - .X             : N x M matrix, N is #subjects, M is #imaging variables
 %       - .Y             : N x B matrix, B is #behaviors
-%       - .grouping_PLS  : N x 1 vector, subject grouping for PLS analysis
+%       - .grouping  : N x 1 vector, subject grouping for PLS analysis
 %                               e.g. [1,1,2] = subjects 1&2 belong to group 1,
 %                               subject 3 belongs to group 2.
 %       - [.group_names]: Names of the groups (optional)
 %       - [.behav_names]: Names of the behavior variables (optional) 
 %   - pls_opts : options for the PLS analysis
-%       - .behav_type          : Type of behavioral analysis
-%              'behavior' for standard behavior PLS
-%              'contrast' to simply compute contrast between two groups
-%              'contrastBehav' to combine contrast and behavioral measures)
-%              'contrastBehavInteract' to also consider group-by-behavior interaction effects
 %       - .nPerms              : number of permutations to run
 %       - .nBootstraps         : number of bootstrapping samples to run
 %       - .normalization_img   : normalization options for imaging data
@@ -25,6 +20,19 @@
 %              2 = zscore within groups (default)
 %              3 = std normalization across subjects (no centering)
 %              4 = std normalization within groups (no centering)
+%       - .grouped_PLS         : binary variable indicating if groups
+%                                should be considered when computing R
+%              0 = PLS will computed over all subjects
+%              1 = R will be constructed by concatenating group-wise
+%                  covariance matrices ( as in conventional behavior PLS)
+%       - .boot_procrustes_mod : mode for bootstrapping procrustes transform
+%              1 = standard (rotation computed only on U)
+%              2 = average rotation of U and V
+%       - [.behav_type]        : Type of behavioral analysis
+%              'behavior' for standard behavior PLS
+%              'contrast' to simply compute contrast between two groups
+%              'contrastBehav' to combine contrast and behavioral measures)
+%              'contrastBehavInteract' to also consider group-by-behavior interaction effects
 %   - save_opts: Options for result saving and plotting
 %       - .CONST_OUTPUT_PATH: path where to save the results
 %       - [.prefix]: prefix of all results files (optional)
@@ -54,7 +62,7 @@ Y0behav=[age,sex,FSIQ]; % sex - 0=female/1=male
 % --- brain data ---
 % Matrix X0 is typically a matrix with brain imaging data,
 %  of size subjects (rows) x imaging features (columns)
-input.X0=X0;
+input.brain_data=X0;
 
 % --- behavior data ---
 % Matrix behavData is a a matrix containing behavior data,
@@ -70,7 +78,7 @@ input.behav_data=Y0behav;
 % --- grouping data ---
 % subj_grouping: group assignment vector
 % binary variable indicating the group, can contain multiple groups
-input.grouping_PLS=diagnosis;
+input.grouping=diagnosis;
 
 
 % --- Names of the groups ---
@@ -86,13 +94,6 @@ clear age diagnosis sex FSIQ brain_data
 
 %% ---------- Options for PLS ----------
 
-% --- Type of behavioral analysis ---
-% 'behavior' for standard behavior PLS
-% 'contrast' to simply compute contrast between two groups
-% 'contrastBehav' to combine contrast and behavioral measures
-% 'contrastBehavInteract' to also consider group-by-behavior interaction effects
-pls_opts.behav_type = 'behavior';
-
 % --- Permutations & Bootstrapping ---
 pls_opts.nPerms = 200;
 pls_opts.nBootstraps = 100;
@@ -106,12 +107,24 @@ pls_opts.nBootstraps = 100;
 pls_opts.normalization_img=1;
 pls_opts.normalization_behav=1;
 
+% --- PLS grouping option ---
+% 0: PLS will computed over all subjects
+% 1: R will be constructed by concatenating group-wise covariance matrices
+%     (as in conventional behavior PLS, see Krishnan et al., 2011)
+pls_opts.grouped_PLS=0; 
 
-% mode for bootstrapping procrustes transform
+% --- Mode for bootstrapping procrustes transform ---
 % in some cases, rotation only depending on U results in extremely low
 % standard errors and bootstrap ratios close to infinity
 % in mode 2, we therefore compute the transformation matrix both on U and V
-pls_opts.procrustes_mod=1; % 1 - standard; 2 - average rotation of U and V
+pls_opts.boot_procrustes_mod=1; % 1 - standard; 2 - average rotation of U and V
+
+% --- Type of behavioral analysis ---
+% 'behavior' for standard behavior PLS
+% 'contrast' to simply compute contrast between two groups
+% 'contrastBehav' to combine contrast and behavioral measures
+% 'contrastBehavInteract' to also consider group-by-behavior interaction effects
+pls_opts.behav_type = 'behavior';
 
 
 %% ---------- Options for result saving and plotting ----------
