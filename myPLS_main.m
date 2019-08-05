@@ -70,6 +70,8 @@
 % doi:10.1016/j.neuroimage.2004.07.020
 
 addpath('./myPLS_functions')
+addpath('./RotmanBaycrest')
+addpath('./misc')
 
 
 %% defining all the inputs
@@ -81,6 +83,7 @@ res = myPLS_analysis(input,plsOpts,saveOpts);
 %% saving the results and plotting the outputs
 % create output directory if necessary
 if ~exist(saveOpts.CONST_OUTPUT_PATH);mkdir(saveOpts.CONST_OUTPUT_PATH);end;
+
 
 
 

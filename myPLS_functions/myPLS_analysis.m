@@ -1,25 +1,30 @@
-function [U,S,V,Lx,Ly,explCovLC,LC_behav_loadings,LC_img_loadings] = myPLS_analysis(X,Y,normalization_img,normalization_behav,nGroups_PLS,grouping_PLS)
+function [U,S,V,Lx,Ly,explCovLC,LC_behav_loadings,LC_img_loadings] = myPLS_analysis(input,plsOpts,saveOpts)
 %
 % PLS analysis (main script)
 %
 % Inputs:
-% - X                   : N x M matrix, N is #subjects, M is #imaging variables
-% - Y                   : N x B matrix, B is #behaviors
-% - normalization_img   : normalization options for imaging data
-% - normalization_behav : normalization options for behavior data
-%                         0 = no normalization
-%                         1 = zscore across all subjects
-%                         2 = zscore within groups (default)
-%                         3 = std normalization across subjects (no centering)
-%                         4 = std normalization within groups (no centering)
-% - nGroups_PLS          : number of groups for PLS analysis, will determine
-%                          if each group has its own set of saliences
-%                          1 = the cross-covariance matrix is computed across all subjects
-%                          2 = the cross-covariance matrix is computed within each group, and
-%                          each group has its set of behavior saliences 
-% - grouping_PLS         : N x 1 vector, subject grouping for PLS analysis
-%                          e.g. [1,1,2] = subjects 1&2 belong to group 1,
-%                          subject 3 belongs to group 2.
+%   - input : struct containing input data for the analysis
+%       - .X             : N x M matrix, N is #subjects, M is #imaging variables
+%       - .Y             : N x B matrix, B is #behaviors
+%       - .grouping_PLS  : N x 1 vector, subject grouping for PLS analysis
+%                               e.g. [1,1,2] = subjects 1&2 belong to group 1,
+%                               subject 3 belongs to group 2.
+%   - pls_opts : options for the PLS analysis
+%       - .behav_type          : Type of behavioral analysis
+%              'behavior' for standard behavior PLS
+%              'contrast' to simply compute contrast between two groups
+%              'contrastBehav' to combine contrast and behavioral measures)
+%              'contrastBehavInteract' to also consider group-by-behavior interaction effects
+%       - .nPerms              : number of permutations to run
+%       - .nBootstraps         : number of bootstrapping samples to run
+%       - .normalization_img   : normalization options for imaging data
+%       - .normalization_behav : normalization options for behavior data
+%              0 = no normalization
+%              1 = zscore across all subjects
+%              2 = zscore within groups (default)
+%              3 = std normalization across subjects (no centering)
+%              4 = std normalization within groups (no centering)
+
 %
 % Outputs:
 % - U                    : B x L matrix, L is #latent components (LC), behavior saliences
@@ -32,17 +37,30 @@ function [U,S,V,Lx,Ly,explCovLC,LC_behav_loadings,LC_img_loadings] = myPLS_analy
 % - LC_img_loadings      : M x L matrix, imaging loadings
 %
 
+
+
 % Check that dimensions of X & Y are correct
-if(size(X,1) ~= size(Y,1))
+if(size(input.X,1) ~= size(input.Y,1))
     error('Input arguments X and Y should have the same number of rows');
 end
 
-nSubj = size(X,1);
-nBehav = size(Y,2);
+% number of subjects
+nSubj = size(input.X,1); 
+
+% number of behavior scores
+nBehav=size(input.Y,2);
+
+% number of imaging measures
+nImg = size(input.brainData,2);  
+
+% number and IDs of groups
+groupIDs=unique(input.grouping_PLS);
+nGroups=length(groupIDs);
+
 
 % Data normalization
-X = myPLS_norm(X,nGroups_PLS,grouping_PLS,normalization_img);
-Y = myPLS_norm(Y,nGroups_PLS,grouping_PLS,normalization_behav);
+X = myPLS_norm(input.X,grouping_PLS,normalization_img);
+Y = myPLS_norm(input.Y,grouping_PLS,normalization_behav);
 
 % Cross-covariance matrix
 R = myPLS_cov(X,Y,nGroups_PLS,grouping_PLS);
