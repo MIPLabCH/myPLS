@@ -26,8 +26,8 @@ groupIDs=unique(subj_grouping);
 nGroups=length(groupIDs);
 
 for iG=1:nGroups
-    Ysel = Y(find(subj_grouping==groupIDs(iG)),:);
-    Xsel = X(find(subj_grouping==groupIDs(iG)),:);
+    Ysel = Y(subj_grouping==groupIDs(iG),:);
+    Xsel = X(subj_grouping==groupIDs(iG),:);
     
     R0 = Ysel.'*Xsel;
 

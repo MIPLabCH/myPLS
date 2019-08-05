@@ -78,11 +78,11 @@ addpath('./misc')
 myPLS_inputs
 
 %% run PLS analysis, including permutation testing and bootstrapping
-res = myPLS_analysis(input,plsOpts,saveOpts);
+res = myPLS_analysis(input,pls_opts);
 
 %% saving the results and plotting the outputs
 % create output directory if necessary
-if ~exist(saveOpts.CONST_OUTPUT_PATH);mkdir(saveOpts.CONST_OUTPUT_PATH);end;
+if ~exist(save_opts.output_path);mkdir(save_opts.output_path);end
 
 
 
