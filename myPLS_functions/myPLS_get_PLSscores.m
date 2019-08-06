@@ -37,7 +37,7 @@ for iG = 1:nGroups
     for iG2 = 1:nGroups
         groupID_find = find(grouping == groupIDs(iG2));
         Ysel = Y(groupID_find,:);
-        Lyy(iG,groupID_find,:) = Ysel * Usel; % I'm really confused by this thing... which scores in Ly should correspond to what??
+        Lyy(iG,groupID_find,:) = Ysel * Usel;
     end        
     iter = iter + nBehav;
 end
