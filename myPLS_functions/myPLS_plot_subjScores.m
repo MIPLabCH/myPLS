@@ -16,7 +16,9 @@ function corr_LxLy = myPLS_plot_subjScores(Lx,Ly,names_groups,grouping,signif_LC
 % Outputs:
 % - corr_LxLy     : correlation between imaging and behavior scores
 
-nGroups = numel(names_groups);
+% number and IDs of groups
+groupIDs=unique(grouping);
+nGroups=length(groupIDs);
 
 colors = {'b','r','c','g','m','y','w','k'}; % Matlab colors
 plot_colors = colors(1:nGroups); % select as many colors as groups
@@ -26,9 +28,9 @@ for iter_lc = 1:size(signif_LC,1)
     this_lc = signif_LC(iter_lc);
     
     figure;
-    for iter_group = 1:numel(names_groups)
-        plot(Lx(find(grouping==iter_group),this_lc),...
-            Ly(find(grouping==iter_group),this_lc),[plot_colors{iter_group} '.'],'MarkerSize',10);
+    for iG = 1:numel(names_groups)
+        plot(Lx(grouping==groupIDs(iG),this_lc),...
+            Ly(grouping==groupIDs(iG),this_lc),[plot_colors{iG} '.'],'MarkerSize',10);
         hold on
     end
     hold off
@@ -36,7 +38,7 @@ for iter_lc = 1:size(signif_LC,1)
     
     legend(names_groups,'Location','southeast');
     xlabel('Imaging scores');
-    ylabel('Behavioral scores');
+    ylabel('Behavior/Design scores');
     
     set(gcf,'Color','w');
     set(gca,'Box','off');

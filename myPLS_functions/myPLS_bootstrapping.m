@@ -116,7 +116,7 @@ for iter_boot = 1:pls_opts.nBootstraps
     
 end
 
-
+if mod(iter_boot,200); fprintf('\n'); end
 disp(' ')
 
 

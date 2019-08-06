@@ -1,4 +1,4 @@
-function [input,pls_opts] = myPLS_analysis_initialize(input,pls_opts)
+function [input,pls_opts,save_opts] = myPLS_initialize(input,pls_opts,save_opts)
 
 % function to set up the defaults and to check for valitidy of inputs for
 % the function myPLS_analysis 
@@ -46,7 +46,7 @@ if ~isfield(input,'behav_names') || isempty(input.behav_names)
 end
 
 
-%% 2. options
+%% 2. PLS options
 % default analysis type: behavior PLS
 if ~isfield(pls_opts,'behav_type') || isempty(pls_opts.behav_type)
     pls_opts.behav_type='behavior';
@@ -118,6 +118,37 @@ if ~isfield(pls_opts,'boot_procrustes_mod') || isempty(pls_opts.boot_procrustes_
 end
 if pls_opts.boot_procrustes_mod~=1 && pls_opts.boot_procrustes_mod~=2
     error('Invalid value in pls_opts.boot_procrustes_mod -> please set to either 1 or 2');
+end
+
+
+
+%% saving & plotting options
+% setup default prefix (with some of the input parameters
+if ~isfield(save_opts,'prefix') || isempty(save_opts.prefix)
+    save_opts.prefix = sprintf('myPLS_TYPE%s_NORM%d%d',pls_opts.behav_type, ...
+        pls_opts.normalization_img, pls_opts.normalization_behav);
+end
+
+% check if an output directory has been specified
+if ~isfield(save_opts,'output_path') || isempty(save_opts.output_path)
+    error('Please specify an output directory to save results');
+end
+
+% create output directory if necessary
+if ~exist(save_opts.output_path,'dir')
+    disp(['Creating output directory: ' save_opts.output_path])
+    mkdir(save_opts.output_path);
+end
+
+% set default alpha level
+if ~isfield(save_opts,'alpha') || isempty(save_opts.alpha)
+    save_opts.alpha=0.05;
+end
+
+% check for compatibility with pls_opts
+% compatibility check for grouping in PLS and plotting
+if pls_opts.grouped_PLS~=save_opts.grouped_plots
+    disp('!!! grouping option for PLS and plotting not identical - make sure that this is what you would like to do!')
 end
 
 disp(' ')

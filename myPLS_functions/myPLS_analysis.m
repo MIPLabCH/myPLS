@@ -1,6 +1,6 @@
 function res = myPLS_analysis(input,pls_opts)
 %
-% PLS analysis (main script)
+% PLS analysis (main function)
 %
 % Inputs:
 %   - input : struct containing input data for the analysis
@@ -45,24 +45,32 @@ function res = myPLS_analysis(input,pls_opts)
 
 %
 % Outputs:
-%   res: Struct containing all results
-%     .X0, .Y0     : unnormalized input matrices
-%     .X, .Y       : normalized input matrices
-%     .U           : B x L matrix, L is #latent components (LC), behavior saliences
-%     .V           : M x L matrix, imaging saliences
-%     .S           : L x L matrix, singular values (diagonal matrix)
-%     .explCovLC   : covariance explained by each LC
-%     .myLVpvals   : p-value for each LV (from permutation testing
-%     .Ub_vect     : 3D matrix with bootstrapping samples of U
-%     .Vb_vect     : 3D matrix with bootstrapping samples of V
+%   - res: Struct containing all results
+%     - .X0, .Y0          : unnormalized input matrices
+%     - .X, .Y            : normalized input matrices
+%     - .design_names     : names of design variables (have only changed in
+%                           case of contrast PLS)
+%     - .grouping,.group_names : copied from input for plotting
+%     - .R                : L x M matrix, L is #latent components (LC),
+%                           brain-behavior covariance matrix
+%     - .U                : B x L matrix, behavior saliences 
+%     - .V                : M x L matrix, imaging saliences
+%     - .S                : L x L matrix, singular values (diagonal matrix)
+%     - .explCovLC        : covariance explained by each LC
+%     - .LC_pvals         : p-value for each LC (from permutation testing)
+%     - .Lx               : brain scores
+%     - .Ly               : behavior/design scores
+%     - .LC_img_loadings  : corr(Lx,X)
+%     - .LC_behav_loadings: corr(Ly,Y)
+%     - .boot_results : struct with bootstrapping results
+%           - .Ub_vect     : 3D matrix with bootstrapping samples of U
+%           - .Vb_vect     : 3D matrix with bootstrapping samples of V
+%           - .Lxb,.Lyb,.LC_img_loadings_boot,.LC_behav_loadings_boot :
+%               3D matrices with bootstrapping PLS result scores
 %
 
 
-%% initialize
-% this function checks all relevant inputs for validity
-[input,pls_opts] = myPLS_analysis_initialize(input,pls_opts);
-
-
+%% get constants
 % number of subjects
 nSubj = size(input.brain_data,1); 
 
@@ -71,9 +79,6 @@ nBehav=size(input.behav_data,2);
 
 % number of imaging measures
 nImg = size(input.brain_data,2);  
-
-% number and IDs of groups
-groupIDs=unique(input.grouping);
 
 
 %% get brain matrix X0
@@ -130,6 +135,9 @@ LC_pvals = myPLS_get_LC_pvals(Sp_vect,S,pls_opts);
 % !!! use non-normalized X0 and Y0, normalization will be done again because of resampling WITH replacement !!!
 boot_results=myPLS_bootstrapping(X0,Y0,U,V,input.grouping,pls_opts);
 
+% TODO: compute bootstrapping stats and maybe remove the orginal sampling
+% data, depending on the type (or size?) of the data (for voxelwise data,
+% saving the original sampling data would take up too much space)
 
 %% save all result variables in struct
 res.X0=X0;
@@ -137,11 +145,14 @@ res.Y0=Y0;
 res.X=X;
 res.Y=Y;
 res.design_names=design_names;
+res.grouping=input.grouping;
+res.group_names=input.group_names;
 res.R=R;
 res.U=U;
 res.S=S;
 res.V=V;
 res.explCovLC=explCovLC;
+res.LC_pvals=LC_pvals;
 res.Lx=Lx;
 res.Ly=Ly;
 res.LC_img_loadings=LC_img_loadings;

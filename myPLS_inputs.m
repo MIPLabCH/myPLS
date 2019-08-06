@@ -42,16 +42,21 @@
 %              'contrastBehav' to combine contrast and behavioral measures)
 %              'contrastBehavInteract' to also consider group-by-behavior interaction effects
 %   - save_opts: Options for result saving and plotting
-%       - .CONST_OUTPUT_PATH: path where to save the results
-%       - [.prefix]: prefix of all results files (optional)
-%       - .imagingType: Specify how to plot the results
-%              'volume'  for voxel-based data in nifti Format - results 
-%                        will be displayed as bootstrap ratios in a brain map
+%       - .output_path   : path where to save the results
+%       - [.prefix]      : prefix of all results files (optional)
+%       - .img_type      : Specify how to plot the results
+%              'volume' for voxel-based data in nifti Format - results 
+%                       will be displayed as bootstrap ratios in a brain map
 %              'corrMat' for ROI-to-ROI correlation matrix - results will 
-%                        be displayed as bootstrap ratios in a correlation matrix
+%                       be displayed as bootstrap ratios in a correlation matrix
 %              'barPlot' for any type of brain data in already vectorized 
-%                        form - results will be displayed as barplots
-%       - .maskFile - gray matter mask, only required if imagingType='volume'
+%                       form - results will be displayed as barplots
+%       - .mask_file     : gray matter mask, only required if imagingType='volume'
+%       - .grouped_plots : binary variable indicating if groups should be 
+%                          considered during plotting
+%              0 = plotting ignoring grouping
+%              1 = plotting cosidering grouping
+%       - [.alpha]         : significance level for LCs [default = 0.05]
 
 
 
@@ -91,7 +96,7 @@ input.grouping=diagnosis;
 
 % --- Names of the groups ---
 % here you can specify the names of the groups for the plots
-input.group_names={'group 1','group 2'}; 
+% input.group_names={'group 1','group 2'}; 
 
 % --- Names of the behavior data ---
 input.behav_names={'age','sex','IQ'}; 
@@ -119,7 +124,7 @@ pls_opts.normalization_behav=1;
 % 0: PLS will computed over all subjects
 % 1: R will be constructed by concatenating group-wise covariance matrices
 %     (as in conventional behavior PLS, see Krishnan et al., 2011)
-pls_opts.grouped_PLS=0; 
+pls_opts.grouped_PLS=1; 
 
 
 % --- Permutations grouping option ---
@@ -151,7 +156,11 @@ pls_opts.behav_type = 'behavior';
 save_opts.output_path='./example_results';
 
 % --- prefix of all results files ---
-save_opts.prefix = 'myPLSresults_example';
+% this is also the default prefix of the toolbox if you don't define
+% anything
+save_opts.prefix = sprintf('myPLS_TYPE%s_NORM%d%d',pls_opts.behav_type,...
+    pls_opts.normalization_img, pls_opts.normalization_behav);
+
 
 % --- Type of brain data ---
 % Specify how to plot the results
@@ -161,14 +170,21 @@ save_opts.prefix = 'myPLSresults_example';
 %           as bootstrap ratios in a correlation matrix
 % 'barPlot' for any type of brain data in already vectorized form - results 
 %           will be displayed as barplots
-save_opts.imaging_type = 'volume';
+save_opts.img_type = 'volume';
 
 % --- Brain mask ---
 % (gray matter mask, only required if imagingType='volume')
-save_opts.mask_file = 'example_mask.nii'; % filename of binary mask that will constrain analysis 
+save_opts.mask_file = 'example_mask.nii'; % filename of binary mask that will constrain analysis
 
 
+% --- Plotting grouping option ---
+% 0: Plots ignoring grouping
+% 1: Plots considering grouping
+save_opts.grouped_plots=1;
 
+
+% --- Significance level for latent components ---
+save_opts.alpha=0.1; % for the sake of the example data
 
 
 

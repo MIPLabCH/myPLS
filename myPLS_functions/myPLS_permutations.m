@@ -64,4 +64,5 @@ for iter_perm = 1:pls_opts.nPerms
     Sp_vect(:,iter_perm) = Sp';    
 end
 
+if mod(iter_perm,200); fprintf('\n'); end
 disp(' ')

@@ -90,54 +90,24 @@ addpath('./RotmanBaycrest')
 addpath('./misc')
 
 
-%% defining all the inputs
+%% define all the inputs
+% Modify this script to setup your PLS analysis
 myPLS_inputs
+
+
+%% check all inputs for validity
+% !!! always run this function to check your setup before running PLS !!!
+[input,pls_opts,save_opts] = myPLS_initialize(input,pls_opts,save_opts);
+
+%% save & plot input data
+myPLS_plot_inputs(input,pls_opts,save_opts)
 
 %% run PLS analysis, including permutation testing and bootstrapping
 res = myPLS_analysis(input,pls_opts);
 
-%% computation of 
-
-
-%% saving the results and plotting the outputs
-% create output directory if necessary
-if ~exist(save_opts.output_path);mkdir(save_opts.output_path);end
-
-
-
-
-
-%% Contribution of original variables to LVs
-% ??? What is this needed for?
-% % Brain & behavior structure coefficients (Correlations imaging/behavior variables - brain/behavior scores)
-% 
-% clear myBrainStructCoeff myBehavStructCoeff
-% 
-% % Brain structure coefficients
-% for iter_lv = 1:numSignifLVs
-%     this_lv = mySignifLVs(iter_lv);
-%     
-%     for iter_img = 1:size(X,2)
-%         clear tmpy tmpx r p
-%         tmpx = X(:,iter_img);
-%         tmpy = Lx(:,this_lv);
-%         [r,p] = corrcoef(tmpx,tmpy.');
-%         myBrainStructCoeff(iter_img,iter_lv) = r(1,2);
-%     end
-%     
-% end
-% 
-% % Behavior structure coefficients
-% for iter_lv = 1:numSignifLVs
-%     this_lv = mySignifLVs(iter_lv);
-% 
-%     for iter_behav = 1:size(Y,2),
-%         clear tmpy tmpx r p
-%         tmpx = Y(:,iter_behav);
-%         tmpy = Ly(:,this_lv);        
-%         [r,p] = corrcoef(tmpx,tmpy.');
-%         myBehavStructCoeff(iter_behav,iter_lv) = r(1,2);
-%     end
-% end
+%% save & plot results data
+% If you run multiple PLS analyses, correct the resulting p-values for
+% multiple comparisons before executing the following function
+myPLS_plot_results(res,save_opts);
 
 
