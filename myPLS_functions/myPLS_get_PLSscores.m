@@ -31,14 +31,19 @@ Lx = X * V;
 % Dani: I removed the selection depending on the number of groups, I believe
 % it should work like this even for one group
 iter = 1;
-for iG = 1:nGroups        
-    Usel = U(iter:iter + nBehav - 1,:);        
+for iG = 1:nGroups
+    sel_idx=iter:iter + nBehav - 1;
+    Usel = U(sel_idx,:);        
     for iG2 = 1:nGroups
-        groupID_find = find(grouping == iG2);
+        groupID_find = find(grouping == groupIDs(iG2));
         Ysel = Y(groupID_find,:);
-        Ly(groupID_find,:) = Ysel * Usel;
+        Lyy(iG,groupID_find,:) = Ysel * Usel; % I'm really confused by this thing... which scores in Ly should correspond to what??
     end        
     iter = iter + nBehav;
+end
+for iG = 1:nGroups
+    groupID_find = find(grouping == groupIDs(iG));
+    Ly(groupID_find,:) = Lyy(iG,groupID_find,:);
 end
 
 
@@ -68,4 +73,42 @@ LC_img_loadings=corr(Lx,X)';
 % Dani: suggestion for faster computation of the identical matrix:
 LC_behav_loadings=corr(Ly,Y)';
 
+
+
+% Contribution of original variables to LVs
+% % Brain & behavior structure coefficients (Correlations imaging/behavior variables - brain/behavior scores)
+% 
+% clear myBrainStructCoeff myBehavStructCoeff
+% 
+% % Brain structure coefficients
+% for iter_lv = 1:numSignifLVs
+%     this_lv = mySignifLVs(iter_lv);
+%     
+%     for iter_img = 1:size(X,2)
+%         clear tmpy tmpx r p
+%         tmpx = X(:,iter_img);
+%         tmpy = Lx(:,this_lv);
+%         [r,p] = corrcoef(tmpx,tmpy.');
+%         myBrainStructCoeff(iter_img,iter_lv) = r(1,2);
+%     end
+%     % Dani: same here, you could use the function corr() to compute
+%     faster correlations
+%     
+% end
+% 
+% % Behavior structure coefficients
+% for iter_lv = 1:numSignifLVs
+%     this_lv = mySignifLVs(iter_lv);
+% 
+%     for iter_behav = 1:size(Y,2),
+%         clear tmpy tmpx r p
+%         tmpx = Y(:,iter_behav);
+%         tmpy = Ly(:,this_lv);        
+%         [r,p] = corrcoef(tmpx,tmpy.');
+%         myBehavStructCoeff(iter_behav,iter_lv) = r(1,2);
+%     end
+%     % Dani: same here, you could use the function corr() to compute
+%     faster correlations
+% 
+% end
 
