@@ -25,7 +25,7 @@
 %
 %
 % ----------------------------EXAMPLES------------------------------------
-% Example applications, which used this script:
+% Example applications, which used this toolbox:
 %
 %  - Behavior PLS with brain network-based measures:
 %
@@ -35,7 +35,17 @@
 %       deletion syndrome. Biol. Psychiatry Cogn. Neurosci. Neuroimaging 
 %       in press. doi:10.1016/j.bpsc.2019.04.004
 %
-%  - PLS for multivariate analysis of group differences and developmental effects:
+%  - Behavior PLS with connectivity measures and different grouping in PLS
+%    and resampling: 
+% 
+%     * Kebets, V., Holmes, A.J., Orban, C., Tang, S., Li, J., Sun, N.,
+%       Kong, R., Poldrack, R.A., Yeo, B.T.T., 2019. Somatosensory-Motor
+%       Dysconnectivity Spans Multiple Transdiagnostic Dimensions of
+%       Psychopathology. Biol. Psychiatry.
+%       doi:10.1016/j.biopsych.2019.06.013
+%
+%  - Contrast PLS for multivariate analysis of group differences and
+%    developmental effects: 
 %
 %     * Zöller, D., Schaer, M., Scariati, E., Padula, M.C., Eliez, S., Van 
 %       De Ville, D., 2017. Disentangling resting-state BOLD variability 
@@ -54,7 +64,7 @@
 % Kebets, with subfunctions borrowed from PLS toolbox by Rotman Baycrest
 % (https://www.rotman-baycrest.on.ca/index.php?section=84)
 % 
-% These scripts and functions are based on MyPLS scripts previously 
+% These scripts and functions are based on myPLS scripts previously 
 % published at https://miplab.epfl.ch/index.php/software/PLS
 %
 % 
@@ -64,10 +74,16 @@
 % Ville, D., 2017. Disentangling resting-state BOLD variability and PCC 
 % functional connectivity in 22q11.2 deletion syndrome. Neuroimage 149, 
 % 85–97. doi:10.1016/j.neuroimage.2017.01.064
+%
+% Kebets, V., Holmes, A.J., Orban, C., Tang, S., Li, J., Sun, N., Kong, R.,
+% Poldrack, R.A., Yeo, B.T.T., 2019. Somatosensory-Motor Dysconnectivity
+% Spans Multiple Transdiagnostic Dimensions of Psychopathology. Biol.
+% Psychiatry. doi:10.1016/j.biopsych.2019.06.013
 % 
 % McIntosh, A.R., Lobaugh, N.J., 2004. Partial least squares analysis of 
 % neuroimaging data: Applications and advances. Neuroimage 23, 250–263. 
 % doi:10.1016/j.neuroimage.2004.07.020
+
 
 addpath('./myPLS_functions')
 addpath('./RotmanBaycrest')
@@ -79,6 +95,9 @@ myPLS_inputs
 
 %% run PLS analysis, including permutation testing and bootstrapping
 res = myPLS_analysis(input,pls_opts);
+
+%% computation of 
+
 
 %% saving the results and plotting the outputs
 % create output directory if necessary
