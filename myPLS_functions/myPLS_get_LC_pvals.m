@@ -1,4 +1,4 @@
-function myLCpvals = myPLS_getLCpvals(Sp_vect,S,pls_opts)
+function myLCpvals = myPLS_get_LC_pvals(Sp_vect,S,pls_opts)
 
 % number of permutations with S_perm greater than S
 S_mat=repmat(diag(S),1,pls_opts.nPerms);
@@ -17,3 +17,6 @@ for iter_lv = 1:numSignifLVs
     this_lv = mySignifLVs(iter_lv);
     disp(['LV' num2str(this_lv) ' - p=' num2str(myLCpvals(this_lv),'%0.3f') ]);
 end
+
+
+disp(' ')

@@ -1,4 +1,6 @@
 % Testing script to check some of the PLS Toolbox functionalities
+clc; clear all; close all;
+
 
 addpath('./myPLS_functions')
 addpath('./RotmanBaycrest')
@@ -84,3 +86,21 @@ try
 catch
     disp('---- Test 7 passed: error if invalid behav_type');
 end
+
+pls_opts.behav_type='contrastBehavInteract';
+pls_opts.boot_procrustes_mod=3;
+try 
+    res = myPLS_analysis(input,pls_opts);
+    disp('---- Test 8 failed: no error if invalid boot_procrustes_mod');
+catch
+    disp('---- Test 8 passed: error if invalid boot_procrustes_mod');
+end
+
+pls_opts.boot_procrustes_mod=2;
+try 
+    res = myPLS_analysis(input,pls_opts);
+    disp('---- Test 9 passed ----');
+catch
+    disp('---- Test 9 failed ----');
+end
+

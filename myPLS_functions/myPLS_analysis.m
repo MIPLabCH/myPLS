@@ -26,6 +26,14 @@ function res = myPLS_analysis(input,pls_opts)
 %              0 = PLS will computed over all subjects [only option for contrast PLS] 
 %              1 = R will be constructed by concatenating group-wise
 %                  covariance matrices [default for behavior PLS]
+%       - [.grouped_perm] : binary variable indicating if groups should be 
+%               considered during the permutations
+%              0 = permutations ignoring grouping
+%              1 = permutations within group
+%       - [.grouped_boot] : binary variable indicating if groups should be 
+%               considered during bootstrapping
+%              0 = bootstrapping ignoring grouping
+%              1 = bootstrapping within group
 %       - [.boot_procrustes_mod]: mode for bootstrapping procrustes transform
 %              1 = standard (rotation computed only on U) [default]
 %              2 = average rotation of U and V
@@ -56,13 +64,13 @@ function res = myPLS_analysis(input,pls_opts)
 
 
 % number of subjects
-nSubj = size(input.X0,1); 
+nSubj = size(input.brain_data,1); 
 
 % number of behavior scores
 nBehav=size(input.behav_data,2);
 
 % number of imaging measures
-nImg = size(input.X0,2);  
+nImg = size(input.brain_data,2);  
 
 % number and IDs of groups
 groupIDs=unique(input.grouping);
@@ -76,11 +84,12 @@ X0=input.brain_data;
 [Y0,design_names,nDesignScores] = myPLS_getY(pls_opts.behav_type,...
     input.behav_data,input.grouping,input.group_names,input.behav_names);
 
+disp('... Input data information ...')
 disp(['Number of observations (subjects): ' num2str(nSubj)]);
 disp(['Number of brain measures (voxels/connections): ' num2str(nImg)]);
 disp(['Number of behavior measures: ' num2str(nBehav)]);
 disp(['Number of design measures (behavior/contrasts): ' num2str(nDesignScores)]);
-
+disp(' ')
 
 
 %% Normalize input data X and Y 
@@ -110,14 +119,14 @@ explCovLC = (diag(S).^2) / sum(diag(S.^2));
 
 %% Permutation testing for LV significance
 % !!! permutations should be run using the already normalized X and Y !!!
-Sp_vect = myPLS_permut(X,Y,U,input.grouping,pls_opts);
+Sp_vect = myPLS_permutations(X,Y,U,input.grouping,pls_opts);
 
 % compute the p-values from the permutation null distribution
-myLCpvals = myPLS_getLCpvals(Sp_vect,S,pls_opts);
-% 
-% %% Bootstrapping to test stability of brain saliences
-% % !!! use non-normalized X0 and Y0, normalization will be done again because of resampling WITH replacement !!!
-% [Ub_vect,Vb_vect]=myPLS_bootstrapping(X0,Y0,U,subj_grouping_analysis,plsOpts);
+myLCpvals = myPLS_get_LC_pvals(Sp_vect,S,pls_opts);
+
+%% Bootstrapping to test stability of brain saliences
+% !!! use non-normalized X0 and Y0, normalization will be done again because of resampling WITH replacement !!!
+[Ub_vect,Vb_vect]=myPLS_bootstrapping(X0,Y0,U,V,input.grouping,pls_opts);
 
 %% save all result variables in struct
 res.X0=X0;
@@ -133,8 +142,8 @@ res.V=V;
 res.explCovLC=explCovLC;
 % res.Sp_vect=Sp_vect; % do we need to save this?
 res.myLCpvals=myLCpvals;
-% res.Ub_vect=Ub_vect;
-% res.Vb_vect=Vb_vect;
+res.Ub_vect=Ub_vect;
+res.Vb_vect=Vb_vect;
 
 
 
@@ -194,3 +203,68 @@ res.myLCpvals=myLCpvals;
 %         clear tmpy tmpx r
 %     end
 % end
+
+
+
+
+
+
+
+% from bootstrapping:
+% Imaging & behavior composite scores
+%     Lxb = Xb * Vb;
+%     
+%     if nGroups_PLS == 1
+%         
+%         Lyb = Yb * Ub;
+%         
+%     elseif nGroups_PLS == 2
+%         Lyb = nan(size(Lxb));
+%         
+%         iter = 1;
+%         for iter_group = 1:nGroups_PLS
+%             Ubsel = Ub(iter:iter + nBehav - 1,:);
+%             for iter_group2 = 1:nGroups_PLS
+%                 idx = find(grouping_PLS == iter_group2);
+%                 Ybsel = Yb(idx,:);
+%                 Lyyb(iter_group,idx,:) = Ybsel * Ubsel;
+%             end
+%             iter = iter + nBehav;
+%         end
+%         
+%         for iter_group = 1:nGroups_PLS
+%             idx = find(grouping_PLS == iter_group);
+%             first = idx(1);
+%             last = idx(end);
+%             Lyb(first:last,:) = Lyyb(iter_group,first:last,:);
+%         end
+%         
+%         clear Lyy Usel Ysel idx iter first last
+%     end
+%     
+%     % Loadings
+%     for iter_lc = 1:size(signif_LC,1)
+%         this_lc = signif_LC(iter_lc);
+%         
+%         % Imaging
+%         for iter_img = 1:size(Xb,2)
+%             tmpy = Lxb(:,this_lc);
+%             tmpx = Xb(:,iter_img);
+%             [r,~] = corrcoef(tmpx,tmpy.');
+%             these_img_loadings(iter_img,iter_lc) = r(1,2);
+%             clear tmpy tmpx r
+%         end
+%         
+%         % Behavior
+%         for iter_behav = 1:size(Y,2)
+%             tmpy = Lyb(:,this_lc);
+%             tmpx = Yb(:,iter_behav);
+%             [r,~] = corrcoef(tmpx,tmpy.');
+%             these_behav_loadings(iter_behav,iter_lc) = r(1,2);
+%             clear tmpy tmpx r
+%         end
+%     end
+%     
+%     LC_img_loadings_boot(:,:,iter_boot) = these_img_loadings;
+%     LC_behav_loadings_boot(:,:,iter_boot) = these_behav_loadings;
+%     

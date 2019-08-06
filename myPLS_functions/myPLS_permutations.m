@@ -1,4 +1,4 @@
-function Sp_vect = myPLS_permut(X,Y,U,grouping,pls_opts)
+function Sp_vect = myPLS_permutations(X,Y,U,grouping,pls_opts)
 %
 % Permutation testing over singular values obtained with PLS
 % Rows (subjects) of Y are permuted within each diagnostic group
@@ -49,13 +49,7 @@ for iter_perm = 1:pls_opts.nPerms
     % according to setup)
     Yp = myPLS_permuteY(Y,grouping,pls_opts.grouped_perm);
     
-%     % Normalization of Y (as there is no replacement, but only shuffling,
-%     % this step is not necessary)
-%     Yp = myPLS_norm(Yp,grouping,normalization_img);
-%     
     % Cross-covariance matrix between X and permuted Y
-    % Dani: for now I am using the same grouping as for the main PLS, there
-    % is no need for a separate option, right?
     Rp = myPLS_cov(Xp,Yp,grouping,pls_opts.grouped_PLS);
     
     % Singular value decomposition of Rp
@@ -69,3 +63,5 @@ for iter_perm = 1:pls_opts.nPerms
     % Keep singular values for sample distribution of singular values
     Sp_vect(:,iter_perm) = Sp';    
 end
+
+disp(' ')
