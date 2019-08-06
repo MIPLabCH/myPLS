@@ -116,17 +116,20 @@ end
 % Amount of covariance explained by each LC
 explCovLC = (diag(S).^2) / sum(diag(S.^2));
 
+% Compute Imaging & behavioral composite scores
+[Lx,Ly,LC_img_loadings,LC_behav_loadings] = myPLS_get_PLSscores(X,Y,V,U,input.grouping,pls_opts);
 
 %% Permutation testing for LV significance
 % !!! permutations should be run using the already normalized X and Y !!!
 Sp_vect = myPLS_permutations(X,Y,U,input.grouping,pls_opts);
 
 % compute the p-values from the permutation null distribution
-myLCpvals = myPLS_get_LC_pvals(Sp_vect,S,pls_opts);
+LC_pvals = myPLS_get_LC_pvals(Sp_vect,S,pls_opts);
 
 %% Bootstrapping to test stability of brain saliences
 % !!! use non-normalized X0 and Y0, normalization will be done again because of resampling WITH replacement !!!
-[Ub_vect,Vb_vect]=myPLS_bootstrapping(X0,Y0,U,V,input.grouping,pls_opts);
+boot_results=myPLS_bootstrapping(X0,Y0,U,V,input.grouping,pls_opts);
+
 
 %% save all result variables in struct
 res.X0=X0;
@@ -134,75 +137,18 @@ res.Y0=Y0;
 res.X=X;
 res.Y=Y;
 res.design_names=design_names;
-res.nDesignScores=nDesignScores;
 res.R=R;
 res.U=U;
 res.S=S;
 res.V=V;
 res.explCovLC=explCovLC;
-% res.Sp_vect=Sp_vect; % do we need to save this?
-res.myLCpvals=myLCpvals;
-res.Ub_vect=Ub_vect;
-res.Vb_vect=Vb_vect;
-
-
-
-
-
-
-% 
-% % Imaging & behavioral composite scores
-% Lx = X * V;
-% 
-% if nGroups_PLS == 1
-%     
-%     Ly = Y * U;
-%     
-% elseif nGroups_PLS == 2
-%     Ly = nan(size(Lx));
-%     
-%     iter = 1;
-%     for iter_group = 1:nGroups_PLS        
-%         Usel = U(iter:iter + nBehav - 1,:);        
-%         for iter_group2 = 1:nGroups_PLS
-%             maxID = find(grouping == iter_group2);
-%             Ysel = Y(maxID,:);
-%             Lyy(iter_group,maxID,:) = Ysel * Usel;
-%         end        
-%         iter = iter + nBehav;
-%     end
-%     
-%     for iter_group = 1:nGroups_PLS
-%         maxID = find(grouping == iter_group);
-%         first = maxID(1);
-%         last = maxID(end);
-%         Ly(first:last,:) = Lyy(iter_group,first:last,:);
-%     end
-%     
-%     clear Lyy Usel Ysel idx iter first last
-% end
-% 
-% % Imaging loadings (Pearson's correlations between Lx and X)
-% for iLC = 1:nLCs
-%     for iter_img = 1:size(X,2)
-%         tmpy = Lx(:,iLC);
-%         tmpx = X(:,iter_img);
-%         r = corrcoef(tmpx,tmpy.');
-%         LC_img_loadings(iter_img,iLC) = r(1,2);
-%         clear tmpy tmpx r
-%     end
-% end
-% 
-% % Behavior loadings (Pearson's correlations between Ly and Y)
-% for iLC = 1:nLCs
-%     for iter_behav = 1:nBehav
-%         tmpy = Ly(:,iLC);
-%         tmpx = Y(:,iter_behav);
-%         r = corrcoef(tmpx,tmpy.');
-%         LC_behav_loadings(iter_behav,iLC) = r(1,2);
-%         clear tmpy tmpx r
-%     end
-% end
+res.Lx=Lx;
+res.Ly=Ly;
+res.LC_img_loadings=LC_img_loadings;
+res.LC_behav_loadings=LC_behav_loadings;
+%res.Sp_vect=Sp_vect; % do we need to save this?
+res.LC_pvals=LC_pvals;
+res.boot_results=boot_results;
 
 
 
@@ -210,61 +156,9 @@ res.Vb_vect=Vb_vect;
 
 
 
-% from bootstrapping:
-% Imaging & behavior composite scores
-%     Lxb = Xb * Vb;
-%     
-%     if nGroups_PLS == 1
-%         
-%         Lyb = Yb * Ub;
-%         
-%     elseif nGroups_PLS == 2
-%         Lyb = nan(size(Lxb));
-%         
-%         iter = 1;
-%         for iter_group = 1:nGroups_PLS
-%             Ubsel = Ub(iter:iter + nBehav - 1,:);
-%             for iter_group2 = 1:nGroups_PLS
-%                 idx = find(grouping_PLS == iter_group2);
-%                 Ybsel = Yb(idx,:);
-%                 Lyyb(iter_group,idx,:) = Ybsel * Ubsel;
-%             end
-%             iter = iter + nBehav;
-%         end
-%         
-%         for iter_group = 1:nGroups_PLS
-%             idx = find(grouping_PLS == iter_group);
-%             first = idx(1);
-%             last = idx(end);
-%             Lyb(first:last,:) = Lyyb(iter_group,first:last,:);
-%         end
-%         
-%         clear Lyy Usel Ysel idx iter first last
-%     end
-%     
-%     % Loadings
-%     for iter_lc = 1:size(signif_LC,1)
-%         this_lc = signif_LC(iter_lc);
-%         
-%         % Imaging
-%         for iter_img = 1:size(Xb,2)
-%             tmpy = Lxb(:,this_lc);
-%             tmpx = Xb(:,iter_img);
-%             [r,~] = corrcoef(tmpx,tmpy.');
-%             these_img_loadings(iter_img,iter_lc) = r(1,2);
-%             clear tmpy tmpx r
-%         end
-%         
-%         % Behavior
-%         for iter_behav = 1:size(Y,2)
-%             tmpy = Lyb(:,this_lc);
-%             tmpx = Yb(:,iter_behav);
-%             [r,~] = corrcoef(tmpx,tmpy.');
-%             these_behav_loadings(iter_behav,iter_lc) = r(1,2);
-%             clear tmpy tmpx r
-%         end
-%     end
-%     
-%     LC_img_loadings_boot(:,:,iter_boot) = these_img_loadings;
-%     LC_behav_loadings_boot(:,:,iter_boot) = these_behav_loadings;
-%     
+
+
+
+
+
+
