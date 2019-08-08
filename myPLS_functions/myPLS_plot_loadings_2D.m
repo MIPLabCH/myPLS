@@ -44,7 +44,6 @@ for iter_lc = 1:size(signif_LC,1)
     set(gca,'TickLabelInterpreter','none','FontSize',6,'Box','off');
     set(gcf,'Color','w');
     title(['LC' num2str(this_lc) ' - ' var_name]);
-%     name_fig = ['LC' num2str(this_lc) '_FC_loadings.jpg'];
     saveas(gcf,[file_name '.jpg']);
     
 end

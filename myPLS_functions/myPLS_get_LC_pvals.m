@@ -12,10 +12,10 @@ mySignifLVs = find(LC_pvals<0.05); % index of significant LVs
 numSignifLVs = size(mySignifLVs,1); % number of significant LVs
 
 % Display significant LVs
-disp([num2str(numSignifLVs) ' significant LV(s) - p<0.05 (uncorrected!)']);
+disp([num2str(numSignifLVs) ' significant LC(s) - p<0.05 (uncorrected!)']);
 for iter_lv = 1:numSignifLVs
     this_lv = mySignifLVs(iter_lv);
-    disp(['LV' num2str(this_lv) ' - p=' num2str(LC_pvals(this_lv),'%0.3f') ]);
+    disp(['LC' num2str(this_lv) ' - p=' num2str(LC_pvals(this_lv),'%0.3f') ]);
 end
 
 

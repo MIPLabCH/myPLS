@@ -71,6 +71,10 @@ function res = myPLS_analysis(input,pls_opts)
 %           - .Vb_vect     : 3D matrix with bootstrapping samples of V
 %           - .Lxb,.Lyb,.LC_img_loadings_boot,.LC_behav_loadings_boot :
 %               3D matrices with bootstrapping PLS result scores
+%           - .*_mean : mean of bootstrapping distributions
+%           - .*_std : standard deviation of bootstrapping distributions
+%           - .*_lB : lower bound of 95% confidence interval of bootstrapping distributions
+%           - .*_uB : upper bound of 95% confidence interval of bootstrapping distributions
 %
 
 
@@ -151,6 +155,7 @@ res.Y=Y;
 res.design_names=design_names;
 res.grouping=input.grouping;
 res.group_names=input.group_names;
+if isfield(input,'img_names'); res.img_names=input.img_names; end
 res.R=R;
 res.U=U;
 res.S=S;

@@ -44,6 +44,15 @@ if ~isfield(input,'behav_names') || isempty(input.behav_names)
         input.behav_names{iB}=['behavior ' num2str(iB)];
     end
 end
+if ~isfield(input,'behav_names') || isempty(input.behav_names)
+    if isfield(save_opts,'img_type') && strcmp(save_opts.img_type,'barPlot')
+        nImg=size(input.brain_data,2);
+        for ii=1:nImg
+            input.img_names{ii,1}=['img ' num2str(ii)]; 
+        end
+    end
+end
+
 
 
 %% 2. PLS options

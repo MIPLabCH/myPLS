@@ -70,6 +70,12 @@
 %              0 = plotting ignoring grouping
 %              1 = plotting cosidering grouping
 %       - .alpha         : significance level for LCs [default = 0.05]
+%       - .plot_boot_samples : binary variable indicating if bootstrap
+%                          samples should be plotted in bar plots
+%       - .errorbar_mode : 'std' = plotting standard deviations
+%                          'CI' = plotting 95% confidence intervals
+%       - .hl_stable	 : binary variable indicating if stable bootstrap
+%                          scores should be highlighted 
 
 
 
@@ -114,7 +120,9 @@ input.grouping=diagnosis;
 % --- Names of the behavior data ---
 input.behav_names={'age','sex','IQ'}; 
 
-
+% --- Names of the imaging data ---
+% will only be used if save_opts.img_type='barPlot'
+for ii=1:20; input.img_names{ii,1}=['img ' num2str(ii)]; end
 
 clear age diagnosis sex FSIQ brain_data
 
@@ -154,7 +162,7 @@ pls_opts.grouped_boot=0;
 % in some cases, rotation only depending on U results in extremely low
 % standard errors and bootstrap ratios close to infinity
 % in mode 2, we therefore compute the transformation matrix both on U and V
-pls_opts.boot_procrustes_mod=1; % 1 - standard; 2 - average rotation of U and V
+pls_opts.boot_procrustes_mod=2; % 1 - standard; 2 - average rotation of U and V
 
 % --- Save bootstrap resampling data? ---
 % select whether bootstrapping resampling data should be saved (only
@@ -181,36 +189,6 @@ save_opts.output_path='./example_results';
 save_opts.prefix = sprintf('myPLS_TYPE%s_NORM%d%d',pls_opts.behav_type,...
     pls_opts.normalization_img, pls_opts.normalization_behav);
 
-
-% --- Type of brain data ---
-% Specify how to plot the results
-% 'volume'  for voxel-based data in nifti Format - results will be 
-%           displayed as bootstrap ratios in a brain map
-% 'corrMat' for ROI-to-ROI correlation matrix - results will be displayed
-%           as bootstrap ratios in a correlation matrix
-% 'barPlot' for any type of brain data in already vectorized form - results 
-%           will be displayed as barplots
-% save_opts.img_type = 'volume';
-
-input.brain_data=input.brain_data(:,1:30135);
-save_opts.img_type = 'corrMat';
-
-
-% --- Brain mask ---
-% (gray matter mask, only required if imagingType='volume')
-save_opts.mask_file = 'example_mask.nii'; % filename of binary mask that will constrain analysis
-
-% --- Brain visualization thresholds ---
-% (gray matter mask, only required if imagingType='volume')
-save_opts.BSR_thres = [-2.3 2.3]; % negative and positive threshold for visualization of bootstrap ratios
-save_opts.load_thres = [-0.4 0.4]; % negative and positive threshold for visualization of loadings
-
-% --- Structural template file for visualization ---
-save_opts.struct_file='example_struct.nii';
-
-% --- Orientation of volumes in slice plots ---
-save_opts.volume_orientation='axial'; %'axial','coronal','sagittal'
-
 % --- Plotting grouping option ---
 % 0: Plots ignoring grouping
 % 1: Plots considering grouping
@@ -221,5 +199,54 @@ save_opts.grouped_plots=1;
 save_opts.alpha=0.1; % for the sake of the example data
 
 
+% --- Type of brain data ---
+% Specify how to plot the results
+% 'volume'  for voxel-based data in nifti Format - results will be 
+%           displayed as bootstrap ratios in a brain map
+% 'corrMat' for ROI-to-ROI correlation matrix - results will be displayed
+%           as bootstrap ratios in a correlation matrix
+% 'barPlot' for any type of brain data in already vectorized form - results 
+%           will be displayed as barplots
 
+% % uncomment the following to see example for volumetric plotting:
+% save_opts.img_type = 'volume'; 
+
+% % uncomment the following to see example for correlation matrix plotting:
+% input.brain_data=input.brain_data(:,1:30135); 
+% save_opts.img_type = 'corrMat';
+
+% uncomment the following to see example for barplot figures:
+input.brain_data=input.brain_data(:,1:20); 
+save_opts.img_type = 'barPlot';
+save_opts.fig_pos_img = [440   606   560   192];
+
+
+% --- Brain visualization thresholds ---
+% (thresholds for bootstrap scores and loadings, only required if imagingType='volume' or imagingType='corrMat')
+save_opts.BSR_thres = [-2.3 2.3]; % negative and positive threshold for visualization of bootstrap ratios
+save_opts.load_thres = [-0.4 0.4]; % negative and positive threshold for visualization of loadings
+
+
+% --- Brain mask ---
+% (gray matter mask, only required if imagingType='volume')
+save_opts.mask_file = 'example_mask.nii'; % filename of binary mask that will constrain analysis
+
+% --- Structural template file for visualization ---
+% (structural volume for background, only required if imagingType='volume')
+save_opts.struct_file='example_struct.nii';
+
+% --- Orientation of volumes in slice plots ---
+% (only required if imagingType='volume')
+save_opts.volume_orientation='axial'; %'axial','coronal','sagittal'
+
+
+
+% --- Bar plot options ---
+save_opts.plot_boot_samples = 1; % binary variable indicating if bootstrap samples should be plotted in bar plots
+save_opts.errorbar_mode = 'CI'; % 'std' = plotting standard deviations; 'CI' = plotting 95% confidence intervals
+save_opts.hl_stable = 1; % binary variable indicating if stable bootstrap scores should be highlighted
+
+
+% --- Customized figure size for behavior bar plots ---
+save_opts.fig_pos_behav = [440   606   320   192];
 

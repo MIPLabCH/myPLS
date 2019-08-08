@@ -9,8 +9,10 @@
 %
 % --------------------------REQUIREMENTS----------------------------------
 %
-% Requires SPM for saving results onto volume, and Slover to display slice
-% maps
+% Requires:
+%   - SPM for saving results onto volume
+%   - Slover to display slice maps
+%   - Function ploterr (Copyright (c) 2008, Felix Zoergiebel) for bar plots
 %
 % ------------------------- ON PLS METHOD---------------------------------
 % For general descriptions of PLS for medical image analysis, we refer to:

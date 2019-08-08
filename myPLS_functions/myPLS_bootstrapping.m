@@ -48,8 +48,10 @@ function boot_results = myPLS_bootstrapping(X0,Y0,U,V,grouping,pls_opts)
 %       - .Lxb,.Lyb,.LC_img_loadings_boot,.LC_behav_loadings_boot :
 %                       bootstrapping scores (see myPLS_get_PLSscores for
 %                       details) 
-%       - .boot_stats : struct containing mean, std and CIs for all
-%                       computed bootstrapping measures
+%       - .*_mean : mean of bootstrapping distributions
+%       - .*_std : standard deviation of bootstrapping distributions
+%       - .*_lB : lower bound of 95% confidence interval of bootstrapping distributions
+%       - .*_uB : upper bound of 95% confidence interval of bootstrapping distributions
 
 
 
@@ -137,6 +139,9 @@ end
 if pls_opts.save_boot_resampling
     boot_results.Ub_vect = Ub_vect;
     boot_results.Vb_vect = Vb_vect;
+else
+    boot_results=rmfield(boot_results,'LC_img_loadings_boot');
+    boot_results=rmfield(boot_results,'LC_behav_loadings');
 end
 
 
