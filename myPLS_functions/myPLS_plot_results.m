@@ -54,18 +54,29 @@ myPLS_plot_subjScores(res.Lx,res.Ly,res.group_names,res.grouping,signif_LC);
 print(gcf,fullfile(save_opts.output_path,[save_opts.prefix '_corrLxLy']),'-depsc2','-painters');
 disp(' ');
 
-%% 
+%% plot imaging saliences and loadings
 switch save_opts.img_type
     case 'volume'
         disp('... Saving bootstrap ratio maps ...')
         bootstrap_ratios=res.V./res.boot_results.Vb_std;
         myPLS_plot_loadings_3D(bootstrap_ratios,'BSR',signif_LC,...
-            save_opts.BSR_map_thres(2),save_opts.BSR_map_thres(1),save_opts);
+            save_opts.BSR_thres(2),save_opts.BSR_thres(1),save_opts);
         disp(' ')
         
         disp('... Saving imaging loading maps ...')
         myPLS_plot_loadings_3D(res.LC_img_loadings,'img_loadings',signif_LC,...
-            save_opts.load_map_thres(2),save_opts.load_map_thres(1),save_opts);
+            save_opts.load_thres(2),save_opts.load_thres(1),save_opts);
+        disp(' ')
+    case 'corrMat'
+        disp('... Saving bootstrap ratio matrix ...')
+        bootstrap_ratios=res.V./res.boot_results.Vb_std;
+        myPLS_plot_loadings_2D(bootstrap_ratios,'BSR',signif_LC,...
+            save_opts.BSR_thres(2),save_opts.BSR_thres(1),save_opts);
+        disp(' ')
+        
+        disp('... Saving imaging loadings matrix ...')
+        myPLS_plot_loadings_2D(res.LC_img_loadings,'img_loadings',signif_LC,...
+            save_opts.load_thres(2),save_opts.load_thres(1),save_opts);
         disp(' ')
 end
 

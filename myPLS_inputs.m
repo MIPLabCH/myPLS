@@ -56,13 +56,13 @@
 %              'barPlot' for any type of brain data in already vectorized 
 %                       form - results will be displayed as barplots
 %       - .mask_file     : gray matter mask, only required if imagingType='volume'
-%       - .BSR_map_thres : 2x1 vector with negative and positive
+%       - .BSR_thres : 2x1 vector with negative and positive
 %                          thresholds for bootstrap ratio map visualization,
 %                          only required if imagingType='volume'
 %       - .struct_file   : filename of structural file for background
 %                          volume to overlay the results on, only required
 %                          if imagingType='volume'
-%       - .load_map_thres : 2x1 vector with negative and positive
+%       - .load_thres : 2x1 vector with negative and positive
 %                          thresholds for loading map visualization,
 %                          only required if imagingType='volume' 
 %       - .grouped_plots : binary variable indicating if groups should be 
@@ -190,7 +190,11 @@ save_opts.prefix = sprintf('myPLS_TYPE%s_NORM%d%d',pls_opts.behav_type,...
 %           as bootstrap ratios in a correlation matrix
 % 'barPlot' for any type of brain data in already vectorized form - results 
 %           will be displayed as barplots
-save_opts.img_type = 'volume';
+% save_opts.img_type = 'volume';
+
+input.brain_data=input.brain_data(:,1:30135);
+save_opts.img_type = 'corrMat';
+
 
 % --- Brain mask ---
 % (gray matter mask, only required if imagingType='volume')
@@ -198,8 +202,8 @@ save_opts.mask_file = 'example_mask.nii'; % filename of binary mask that will co
 
 % --- Brain visualization thresholds ---
 % (gray matter mask, only required if imagingType='volume')
-save_opts.BSR_map_thres = [-2.3 2.3]; % negative and positive threshold for visualization of bootstrap ratios
-save_opts.load_map_thres = [-0.4 0.4]; % negative and positive threshold for visualization of loadings
+save_opts.BSR_thres = [-2.3 2.3]; % negative and positive threshold for visualization of bootstrap ratios
+save_opts.load_thres = [-0.4 0.4]; % negative and positive threshold for visualization of loadings
 
 % --- Structural template file for visualization ---
 save_opts.struct_file='example_struct.nii';
