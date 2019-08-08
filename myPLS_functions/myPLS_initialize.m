@@ -159,6 +159,51 @@ if ~isfield(save_opts,'alpha') || isempty(save_opts.alpha)
     save_opts.alpha=0.05;
 end
 
+% check img type
+if ~isfield(save_opts,'img_type') || isempty(save_opts.img_type)
+    error('Please specify the imaging type (volume/corrMat/barPlot)')
+end
+if strcmp(save_opts.img_type,'volume')
+    if ~isfield(save_opts,'mask_file') || isempty(save_opts.mask_file) || ~exist(save_opts.mask_file,'file')
+        error('Imaging type volume: specify a valid gray matter mask file!')
+    end
+    
+    if ~isfield(save_opts,'struct_file') || isempty(save_opts.struct_file) || ~exist(save_opts.struct_file,'file')
+        error('Imaging type volume: specify a valid structural file for image background!')
+    end
+    
+    % check for BSR map threshold
+    if ~isfield(save_opts,'BSR_map_thres') || isempty(save_opts.BSR_map_thres)
+        save_opts.BSR_map_thres = [-3 3];
+        disp('No BSR brain map threshold specified, falling back to default threshold = +/-3')
+    elseif length(save_opts.BSR_map_thres) == 1
+        % compatibility with single threshold input
+        if save_opts.BSR_map_thres > 0
+            save_opts.BSR_map_thres=[-save_opts.BSR_map_thres save_opts.BSR_map_thres];
+        else 
+            save_opts.BSR_map_thres=[save_opts.BSR_map_thres -save_opts.BSR_map_thres];
+        end
+    elseif length(save_opts.BSR_map_thres) > 2 || save_opts.BSR_map_thres(1)>0 || save_opts.BSR_map_thres(2)<0
+        disp('!!! BSR brain map threshold should have the following form: [negative_thres positive_thres], please check your inputs!');
+    end
+    
+    % check for loading map threshold
+    if ~isfield(save_opts,'load_map_thres') || isempty(save_opts.load_map_thres)
+        save_opts.load_map_thres = [-0.1 0.1];
+        disp('No loadings brain map threshold specified, falling back to default threshold = +/-0.1')
+    elseif length(save_opts.load_map_thres) == 1
+        % compatibility with single threshold input
+        if save_opts.load_map_thres > 0
+            save_opts.load_map_thres=[-save_opts.load_map_thres save_opts.load_map_thres];
+        else 
+            save_opts.load_map_thres=[save_opts.load_map_thres -save_opts.load_map_thres];
+        end
+    elseif length(save_opts.load_map_thres) > 2 || save_opts.load_map_thres(1)>0 || save_opts.load_map_thres(2)<0
+        disp('!!! Loadings brain map threshold should have the following form: [negative_thres positive_thres], please check your inputs!');
+    end
+end
+
+
 % check for compatibility with pls_opts
 % compatibility check for grouping in PLS and plotting
 if pls_opts.grouped_PLS~=save_opts.grouped_plots

@@ -27,7 +27,7 @@ disp('Correlations between imaging and behavioral scores');
 for iter_lc = 1:size(signif_LC,1)
     this_lc = signif_LC(iter_lc);
     
-    figure;
+    figure('position',[440   541   327   257]);
     for iG = 1:numel(names_groups)
         plot(Lx(grouping==groupIDs(iG),this_lc),...
             Ly(grouping==groupIDs(iG),this_lc),[plot_colors{iG} '.'],'MarkerSize',10);

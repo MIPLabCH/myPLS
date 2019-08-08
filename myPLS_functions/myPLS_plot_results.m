@@ -48,23 +48,28 @@ end
 %% find significant latent variables
 signif_LC=find(res.LC_pvals<save_opts.alpha);
 
-%% remove bootstrap samples in case of volume brain data
-if strcmp(save_opts.img_type,'volume')
-    % in case of voxelwise brain data, saving the bootstrapping results is
-    % not possible because it would take up too much space, we will save
-    % the stats instead
-    boot_results=res.boot_results;
-    res=rmfield(res,'boot_results');
-end
+%% plot the brain scores
+disp('... Plotting brain scores ...')
+myPLS_plot_subjScores(res.Lx,res.Ly,res.group_names,res.grouping,signif_LC);
+print(gcf,fullfile(save_opts.output_path,[save_opts.prefix '_corrLxLy']),'-depsc2','-painters');
+disp(' ');
 
+%% 
+switch save_opts.img_type
+    case 'volume'
+        disp('... Saving bootstrap ratio maps ...')
+        bootstrap_ratios=res.V./res.boot_results.Vb_std;
+        myPLS_plot_loadings_3D(bootstrap_ratios,'BSR',signif_LC,...
+            save_opts.BSR_map_thres(2),save_opts.BSR_map_thres(1),save_opts);
+        disp(' ')
+        
+        disp('... Saving imaging loading maps ...')
+        myPLS_plot_loadings_3D(res.LC_img_loadings,'img_loadings',signif_LC,...
+            save_opts.load_map_thres(2),save_opts.load_map_thres(1),save_opts);
+        disp(' ')
+end
 
 %% save results struct
 disp('... Saving results ...')
 save(fullfile(save_opts.output_path,[save_opts.prefix '_res']),'res','-v7.3');
 disp(' ');
-
-%% plot the brain scores
-myPLS_plot_subjScores(res.Lx,res.Ly,res.group_names,res.grouping,signif_LC);
-
-
-

@@ -9,8 +9,8 @@
 %
 % --------------------------REQUIREMENTS----------------------------------
 %
-%
-%
+% Requires SPM for saving results onto volume, and Slover to display slice
+% maps
 %
 % ------------------------- ON PLS METHOD---------------------------------
 % For general descriptions of PLS for medical image analysis, we refer to:
@@ -84,10 +84,12 @@
 % neuroimaging data: Applications and advances. Neuroimage 23, 250–263. 
 % doi:10.1016/j.neuroimage.2004.07.020
 
+clc; clear all; close all;
 
 addpath('./myPLS_functions')
 addpath('./RotmanBaycrest')
 addpath('./misc')
+addpath('./spm12')
 
 
 %% define all the inputs
