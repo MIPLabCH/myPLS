@@ -28,6 +28,10 @@ function boot_results = myPLS_bootstrapping(X0,Y0,U,V,grouping,pls_opts)
 %       - .boot_procrustes_mod : mode for bootstrapping procrustes transform
 %              1 = standard (rotation computed only on U)
 %              2 = average rotation of U and V
+%       - .save_boot_resampling: indicator whether to save bootstrap
+%                                  resampling data or not
+%              0 = no saving of bootstrapping resampling data
+%              1 = save bootstrapping resampling data
 %       - .normalization_img    : normalization options for FC data
 %       - .normalization_behav  : normalization options for behavior data
 %              0 = no normalization
@@ -38,11 +42,14 @@ function boot_results = myPLS_bootstrapping(X0,Y0,U,V,grouping,pls_opts)
 %
 % Outputs:
 % - boot_results : struct containing all resluts from bootstrapping
-%       - .Ub_vect : B x S x P matrix, S is #LCs, P is #bootstrap samples,
-%             bootstrapped behavior saliences for all LCs
-%       - .Vb_vect : M x S xP matrix, bootstrapped brain saliences for all LCs
+%       - .Ub_vect    : B x S x P matrix, S is #LCs, P is #bootstrap samples,
+%                       bootstrapped behavior saliences for all LCs
+%       - .Vb_vect    : M x S xP matrix, bootstrapped brain saliences for all LCs
 %       - .Lxb,.Lyb,.LC_img_loadings_boot,.LC_behav_loadings_boot :
-%           bootstrapping scores (see myPLS_get_PLSscores for details)
+%                       bootstrapping scores (see myPLS_get_PLSscores for
+%                       details) 
+%       - .boot_stats : struct containing mean, std and CIs for all
+%                       computed bootstrapping measures
 
 
 
@@ -103,8 +110,8 @@ for iter_boot = 1:pls_opts.nBootstraps
     
     % vectors with all bootstrap samples --> needed for percentile
     % computation
-    boot_results.Ub_vect(:,:,iter_boot) = Ub;
-    boot_results.Vb_vect(:,:,iter_boot) = Vb;
+    Ub_vect(:,:,iter_boot) = Ub;
+    Vb_vect(:,:,iter_boot) = Vb;
     
     % compute bootstrapping PLS scores
     [Lx,Ly,LC_img_loadings,LC_behav_loadings] = myPLS_get_PLSscores(Xb,Yb,Vb,Ub,grouping,pls_opts);
@@ -116,66 +123,23 @@ for iter_boot = 1:pls_opts.nBootstraps
     
 end
 
+% compute bootstrapping statistics
+boot_stats = myPLS_bootstrap_stats(Ub_vect,Vb_vect,boot_results);
+
+% save all the statistics fields in the boot_results (I am coding it like
+% this to facilitate adding more stats
+fN=fieldnames(boot_stats);
+for iF=1:length(fN)
+    boot_results.(fN{iF})=boot_stats.(fN{iF});
+end
+
+% save bootstrapping resampling data if asked for
+if pls_opts.save_boot_resampling
+    boot_results.Ub_vect = Ub_vect;
+    boot_results.Vb_vect = Vb_vect;
+end
+
+
 if mod(iter_boot,200); fprintf('\n'); end
 disp(' ')
 
-
-
-% 
-% 
-% % Imaging & behavior composite scores
-%     Lxb = Xb * Vb;
-%     
-%     if nGroups_PLS == 1
-%         
-%         Lyb = Yb * Ub;
-%         
-%     elseif nGroups_PLS == 2
-%         Lyb = nan(size(Lxb));
-%         
-%         iter = 1;
-%         for iter_group = 1:nGroups_PLS
-%             Ubsel = Ub(iter:iter + nBehav - 1,:);
-%             for iter_group2 = 1:nGroups_PLS
-%                 idx = find(grouping_PLS == iter_group2);
-%                 Ybsel = Yb(idx,:);
-%                 Lyyb(iter_group,idx,:) = Ybsel * Ubsel;
-%             end
-%             iter = iter + nBehav;
-%         end
-%         
-%         for iter_group = 1:nGroups_PLS
-%             idx = find(grouping_PLS == iter_group);
-%             first = idx(1);
-%             last = idx(end);
-%             Lyb(first:last,:) = Lyyb(iter_group,first:last,:);
-%         end
-%         
-%         clear Lyy Usel Ysel idx iter first last
-%     end
-%     
-%     % Loadings
-%     for iter_lc = 1:size(signif_LC,1)
-%         this_lc = signif_LC(iter_lc);
-%         
-%         % Imaging
-%         for iter_img = 1:size(Xb,2)
-%             tmpy = Lxb(:,this_lc);
-%             tmpx = Xb(:,iter_img);
-%             [r,~] = corrcoef(tmpx,tmpy.');
-%             these_img_loadings(iter_img,iter_lc) = r(1,2);
-%             clear tmpy tmpx r
-%         end
-%         
-%         % Behavior
-%         for iter_behav = 1:size(Y,2)
-%             tmpy = Lyb(:,this_lc);
-%             tmpx = Yb(:,iter_behav);
-%             [r,~] = corrcoef(tmpx,tmpy.');
-%             these_behav_loadings(iter_behav,iter_lc) = r(1,2);
-%             clear tmpy tmpx r
-%         end
-%     end
-%     
-%     LC_img_loadings_boot(:,:,iter_boot) = these_img_loadings;
-%     LC_behav_loadings_boot(:,:,iter_boot) = these_behav_loadings;

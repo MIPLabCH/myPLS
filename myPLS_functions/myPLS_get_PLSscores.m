@@ -71,8 +71,15 @@ LC_img_loadings=corr(Lx,X)';
 %     end
 % end
 % Dani: suggestion for faster computation of the identical matrix:
-LC_behav_loadings=corr(Ly,Y)';
-
+% I believe that these correlations should be computed for each group
+% separately as well, right?
+iter = 1;
+for iG = 1:nGroups
+    sel_idx=iter:iter + nBehav - 1;
+    groupID_find = find(grouping == groupIDs(iG));
+    LC_behav_loadings(sel_idx,:)=corr(Ly(groupID_find,:),Y(groupID_find,:))';
+    iter = iter + nBehav;
+end
 
 
 % Contribution of original variables to LVs

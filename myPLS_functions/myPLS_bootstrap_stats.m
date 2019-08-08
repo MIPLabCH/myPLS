@@ -1,81 +1,105 @@
-function [std_behav_boot,zscore_behav_boot,pvals_behav_boot,std_img_boot,zscore_img_boot,pvals_img_boot] = ...
-    myPLS_bootstrap_stats(LC_behav_loadings,LC_behav_loadings_boot,LC_img_loadings,LC_img_loadings_boot,signif_LC)
+% function [std_behav_boot,zscore_behav_boot,pvals_behav_boot,std_img_boot,zscore_img_boot,pvals_img_boot] = ...
+%     myPLS_bootstrap_stats(LC_behav_loadings,LC_behav_loadings_boot,LC_img_loadings,LC_img_loadings_boot,signif_LC)
+
+function boot_stats = myPLS_bootstrap_stats(Ub_vect,Vb_vect,boot_results)
 %
-% This function computes the mean and std deviation across the imaging &
-% behavior loadings obtained with bootstrap resampling (myPLS_bootstrap_loadings.m).
-% Z-scores & p-values are then calculated by dividing the original loadings
-% by their bootstrap-estimated standard deviation. 
+% This function computes the mean, std deviation and confidence intervals
+% across the imaging & behavior loadings obtained with bootstrap resampling
+% (myPLS_bootstrap_loadings.m).
+% bootstrap scores will be computed later, as they depend on the PLS
+% results
 %
 % Inputs:
-% - LC_behav_loadings      : B x L matrix, B is #behaviors, L is #latent
-%                            components (LCs), behavior loadings
-% - LC_behav_loadings_boot : B x S x P matrix, S is #significant LCs, 
-%                            P is # bootstrap samples, bootstrapped behavior loadings 
-% - LC_img_loadings        : M x L matrix, M is #imaging, imaging loadings 
-% - LC_img_loadings_boot   : M x S x P matrix, bootstrapped imaging 
-%                            loadings for significant LCs
-% - signif_LC              : significant latent components to consider (e.g. [1,2])
+% - Ub_vect      : B x S x P matrix, S is #LCs, P is #bootstrap samples,
+%                  bootstrapped behavior saliences for all LCs
+% - Vb_vect      : M x S xP matrix, bootstrapped brain saliences for all LCs
+% - boot_results : struct containing resluts from bootstrapping
+%       - .Lxb,.Lyb,.LC_img_loadings_boot,.LC_behav_loadings_boot :
+%           bootstrapping scores (see myPLS_get_PLSscores for details)
+% - LC_behav_loadings_boot : B x S x P matrix, S is #LCs, 
+%                            P is # bootstrap samples, bootstrapped behavior loadings
+% - LC_img_loadings_boot   : M x S x P matrix, bootstrapped imaging loadings
 %
 % Outputs:
-% std_behav_boot           : B x S matrix, standard deviation of behavior loadings
-%                            across bootstrap samples for significant LCs
-% zscore_behav_boot        : B x S matrix, zscore of behavior loadings
-%                            across bootstrap samples for significant LCs
-% pvals_behav_boot         : B x S matrix, p-values of behavior loadings
-% std_img_boot             : M x S matrix, standard deviation of imaging
-%                            loadings across bootstrap samples for significant LCs
-% zscore_img_boot          : M x S matrix, zscore of imaging loadings
-%                            across bootstrap samples for significant LCs
-% pvals_img_boot           : 18 x 18 x S matrix, p-values of imaging loading 
-%                            for significant LCs
-%
+% - boot_stats : struct containing all computed bootstrapping measures
+%     - .*_mean : mean of bootstrapping distributions
+%     - .*_std : standard deviation of bootstrapping distributions
+%     - .*_lB : lower bound of 95% confidence interval of bootstrapping distributions
+%     - .*_uB : upper bound of 95% confidence interval of bootstrapping distributions
 
-nBehav = size(LC_behav_loadings,1);
-nImaging = size(LC_img_loadings,1); 
-nBootstraps = size(LC_behav_loadings_boot,3);
+nBehav = size(boot_results.LC_behav_loadings_boot,1);
+nImaging = size(boot_results.LC_img_loadings_boot,1); 
+nBootstraps = size(boot_results.LC_behav_loadings_boot,3);
 
-%%% Behavior loadings
 
-% Compute mean, std deviation, z-scores, p-values of behavior loadings
-for iter_lc = 1:size(signif_LC,1)   
-    for iter_behav = 1:nBehav
+%% Behavior and imaging saliences
+% Computing mean, std and CIs for bootstrap saliences
+boot_stats.Ub_mean=mean(Ub_vect,3); % mean
+boot_stats.Ub_std=std(Ub_vect,[],3); % standard deviation
+boot_stats.Ub_lB=prctile(Ub_vect,2.5,3); % lower bound of 95% CI
+boot_stats.Ub_uB=prctile(Ub_vect,97.5,3); % lower bound of 95% CI
 
-        this_lc = signif_LC(iter_lc);
-        
-        % Std across samples
-        std_behav_boot(iter_behav,iter_lc) = std(LC_behav_loadings_boot(iter_behav,iter_lc,:));
-               
-        % Z-score (original loading / std loading across samples)
-        zscore_behav_boot(iter_behav,iter_lc) = LC_behav_loadings(iter_behav,this_lc) / std_behav_boot(iter_behav,iter_lc);
-        
-        % P-values for z-scores
-        if zscore_behav_boot(iter_behav,iter_lc) >= 0
-            pvals_behav_boot(iter_behav,iter_lc) = 1-cdf('norm',zscore_behav_boot(iter_behav,iter_lc),0,1);
-        elseif zscore_behav_boot(iter_behav,iter_lc) < 0
-            pvals_behav_boot(iter_behav,iter_lc) = cdf('norm',zscore_behav_boot(iter_behav,iter_lc),0,1);
-        end
-        
-    end    
-end
+boot_stats.Vb_mean=mean(Vb_vect,3); % mean
+boot_stats.Vb_std=std(Vb_vect,[],3); % standard deviation
+boot_stats.Vb_lB=prctile(Vb_vect,2.5,3); % lower bound of 95% CI
+boot_stats.Vb_uB=prctile(Vb_vect,97.5,3); % lower bound of 95% CI
 
-%%% Imaging loadings
 
-% Compute mean, std deviation, z-scores, p-values of imaging loadings
+%% Behavior and imaging loadings
+% Computing mean, std and CIs for bootstrap saliences
+boot_stats.LC_behav_loadings_mean=mean(boot_results.LC_behav_loadings_boot,3); % mean
+boot_stats.LC_behav_loadings_std=std(boot_results.LC_behav_loadings_boot,[],3); % standard deviation
+boot_stats.LC_behav_loadings_lB=prctile(boot_results.LC_behav_loadings_boot,2.5,3); % lower bound of 95% CI
+boot_stats.LC_behav_loadings_uB=prctile(boot_results.LC_behav_loadings_boot,97.5,3); % lower bound of 95% CI
 
-for iter_lc = 1:size(signif_LC,1)
-    for iter_img = 1:nImaging
-        
-        % Std across samples
-        std_img_boot(iter_img,iter_lc) = std(LC_img_loadings_boot(iter_img,iter_lc,:));
-        
-        % Z-score (original loading / std loading across samples)
-        zscore_img_boot(iter_img,iter_lc) = LC_img_loadings(iter_img,iter_lc) / std_img_boot(iter_img,iter_lc);
-        
-        % P-values for z-scores
-        if zscore_img_boot(iter_img,iter_lc) >= 0
-            pvals_img_boot(iter_img,iter_lc) = 1-cdf('norm',zscore_img_boot(iter_img,iter_lc),0,1);
-        elseif zscore_img_boot(iter_img,iter_lc) < 0
-            pvals_img_boot(iter_img,iter_lc) = cdf('norm',zscore_img_boot(iter_img,iter_lc),0,1);
-        end
-    end
-end
+boot_stats.LC_img_loadings_mean=mean(boot_results.LC_img_loadings_boot,3); % mean
+boot_stats.LC_img_loadings_std=std(boot_results.LC_img_loadings_boot,[],3); % standard deviation
+boot_stats.LC_img_loadings_lB=prctile(boot_results.LC_img_loadings_boot,2.5,3); % lower bound of 95% CI
+boot_stats.LC_img_loadings_uB=prctile(boot_results.LC_img_loadings_boot,97.5,3); % lower bound of 95% CI
+
+
+% %%% Behavior loadings
+% 
+% % Compute mean, std deviation, z-scores, p-values of behavior loadings
+% for iter_lc = 1:size(signif_LC,1)   
+%     for iter_behav = 1:nBehav
+% 
+%         this_lc = signif_LC(iter_lc);
+%         
+%         % Std across samples
+%         std_behav_boot(iter_behav,iter_lc) = std(LC_behav_loadings_boot(iter_behav,iter_lc,:));
+%                
+%         % Z-score (original loading / std loading across samples)
+%         zscore_behav_boot(iter_behav,iter_lc) = LC_behav_loadings(iter_behav,this_lc) / std_behav_boot(iter_behav,iter_lc);
+%         
+%         % P-values for z-scores
+%         if zscore_behav_boot(iter_behav,iter_lc) >= 0
+%             pvals_behav_boot(iter_behav,iter_lc) = 1-cdf('norm',zscore_behav_boot(iter_behav,iter_lc),0,1);
+%         elseif zscore_behav_boot(iter_behav,iter_lc) < 0
+%             pvals_behav_boot(iter_behav,iter_lc) = cdf('norm',zscore_behav_boot(iter_behav,iter_lc),0,1);
+%         end
+%         
+%     end    
+% end
+% 
+% %%% Imaging loadings
+% 
+% % Compute mean, std deviation, z-scores, p-values of imaging loadings
+% 
+% for iter_lc = 1:size(signif_LC,1)
+%     for iter_img = 1:nImaging
+%         
+%         % Std across samples
+%         std_img_boot(iter_img,iter_lc) = std(LC_img_loadings_boot(iter_img,iter_lc,:));
+%         
+%         % Z-score (original loading / std loading across samples)
+%         zscore_img_boot(iter_img,iter_lc) = LC_img_loadings(iter_img,iter_lc) / std_img_boot(iter_img,iter_lc);
+%         
+%         % P-values for z-scores
+%         if zscore_img_boot(iter_img,iter_lc) >= 0
+%             pvals_img_boot(iter_img,iter_lc) = 1-cdf('norm',zscore_img_boot(iter_img,iter_lc),0,1);
+%         elseif zscore_img_boot(iter_img,iter_lc) < 0
+%             pvals_img_boot(iter_img,iter_lc) = cdf('norm',zscore_img_boot(iter_img,iter_lc),0,1);
+%         end
+%     end
+% end

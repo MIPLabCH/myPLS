@@ -4,13 +4,13 @@ function res = myPLS_analysis(input,pls_opts)
 %
 % Inputs:
 %   - input : struct containing input data for the analysis
-%       - .brain_data    : N x M matrix, N is #subjects, M is #imaging variables
-%       - .behav_data    : N x B matrix, B is #behaviors
-%       - .grouping  : N x 1 vector, subject grouping for PLS analysis
+%       - .brain_data  : N x M matrix, N is #subjects, M is #imaging variables
+%       - .behav_data  : N x B matrix, B is #behaviors
+%       - .grouping    : N x 1 vector, subject grouping for PLS analysis
 %                               e.g. [1,1,2] = subjects 1&2 belong to group 1,
 %                               subject 3 belongs to group 2.
-%       - [.group_names]: Names of the groups (optional)
-%       - [.behav_names]: Names of the behavior variables (optional) 
+%       - .group_names : Names of the groups (optional)
+%       - .behav_names : Names of the behavior variables (optional) 
 %   - pls_opts : options for the PLS analysis
 %       - .nPerms              : number of permutations to run
 %       - .nBootstraps         : number of bootstrapping samples to run
@@ -21,23 +21,27 @@ function res = myPLS_analysis(input,pls_opts)
 %              2 = zscore within groups (default)
 %              3 = std normalization across subjects (no centering)
 %              4 = std normalization within groups (no centering)
-%       - [.grouped_PLS]       : binary variable indicating if groups
+%       - .grouped_PLS         : binary variable indicating if groups
 %                                should be considered when computing R
 %              0 = PLS will computed over all subjects [only option for contrast PLS] 
 %              1 = R will be constructed by concatenating group-wise
 %                  covariance matrices [default for behavior PLS]
-%       - [.grouped_perm] : binary variable indicating if groups should be 
-%               considered during the permutations
+%       - .grouped_perm        : binary variable indicating if groups
+%                                should be considered during the permutations
 %              0 = permutations ignoring grouping
 %              1 = permutations within group
-%       - [.grouped_boot] : binary variable indicating if groups should be 
-%               considered during bootstrapping
+%       - .grouped_boot        : binary variable indicating if groups
+%                                should be considered during bootstrapping
 %              0 = bootstrapping ignoring grouping
 %              1 = bootstrapping within group
-%       - [.boot_procrustes_mod]: mode for bootstrapping procrustes transform
+%       - .boot_procrustes_mod : mode for bootstrapping procrustes transform
 %              1 = standard (rotation computed only on U) [default]
 %              2 = average rotation of U and V
-%       - [.behav_type]        : Type of behavioral analysis
+%       - .save_boot_resampling : binary variable indicating if bootstrap
+%                                  resampling data should be saved or not
+%              0 = no saving of bootstrapping resampling data
+%              1 = save bootstrapping resampling data
+%       - .behav_type           : Type of behavioral analysis
 %              'behavior' for standard behavior PLS [default]
 %              'contrast' to simply compute contrast between two groups
 %              'contrastBehav' to combine contrast and behavioral measures)

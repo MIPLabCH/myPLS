@@ -120,7 +120,21 @@ if pls_opts.boot_procrustes_mod~=1 && pls_opts.boot_procrustes_mod~=2
     error('Invalid value in pls_opts.boot_procrustes_mod -> please set to either 1 or 2');
 end
 
-
+% set up default for saving bootstrapping data
+nImg = size(input.brain_data,2);  
+if ~isfield(pls_opts,'save_boot_resampling') || isempty(pls_opts.save_boot_resampling)
+    disp('No selection whether bootstrapping samples should be saved, falling back to default:')
+    if nImg > 1000
+        pls_opts.save_boot_resampling=0;
+        disp('   More than 1000 imaging dimensions -> no saving of bootstrap samples')
+    else
+        pls_opts.save_boot_resampling=1;
+    	disp('   Less than 1000 imaging dimensions -> bootstrap samples will be saved')
+    end
+end
+if pls_opts.save_boot_resampling && nImg > 1000
+    disp('!!! Bootstrap sample saving selected, but more than 1000 imaging dimensions - this can cause very large files!')
+end
 
 %% saving & plotting options
 % setup default prefix (with some of the input parameters

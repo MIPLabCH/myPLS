@@ -36,14 +36,18 @@
 %       - .boot_procrustes_mod : mode for bootstrapping procrustes transform
 %              1 = standard (rotation computed only on U)
 %              2 = average rotation of U and V
-%       - [.behav_type]        : Type of behavioral analysis
+%       - .save_boot_resampling : binary variable indicating if bootstrap
+%                                  resampling data should be saved or not
+%              0 = no saving of bootstrapping resampling data
+%              1 = save bootstrapping resampling data
+%       - .behav_type        : Type of behavioral analysis
 %              'behavior' for standard behavior PLS
 %              'contrast' to simply compute contrast between two groups
 %              'contrastBehav' to combine contrast and behavioral measures)
 %              'contrastBehavInteract' to also consider group-by-behavior interaction effects
 %   - save_opts: Options for result saving and plotting
 %       - .output_path   : path where to save the results
-%       - [.prefix]      : prefix of all results files (optional)
+%       - .prefix        : prefix of all results files (optional)
 %       - .img_type      : Specify how to plot the results
 %              'volume' for voxel-based data in nifti Format - results 
 %                       will be displayed as bootstrap ratios in a brain map
@@ -56,7 +60,7 @@
 %                          considered during plotting
 %              0 = plotting ignoring grouping
 %              1 = plotting cosidering grouping
-%       - [.alpha]         : significance level for LCs [default = 0.05]
+%       - .alpha         : significance level for LCs [default = 0.05]
 
 
 
@@ -142,6 +146,13 @@ pls_opts.grouped_boot=0;
 % standard errors and bootstrap ratios close to infinity
 % in mode 2, we therefore compute the transformation matrix both on U and V
 pls_opts.boot_procrustes_mod=1; % 1 - standard; 2 - average rotation of U and V
+
+% --- Save bootstrap resampling data? ---
+% select whether bootstrapping resampling data should be saved (only
+% recommended for few imaging dimensions)
+% pls_opts.save_boot_resampling=1;
+
+
 
 % --- Type of behavioral analysis ---
 % 'behavior' for standard behavior PLS
