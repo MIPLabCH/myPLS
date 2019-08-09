@@ -141,7 +141,7 @@ if pls_opts.save_boot_resampling
     boot_results.Vb_vect = Vb_vect;
 else
     boot_results=rmfield(boot_results,'LC_img_loadings_boot');
-    boot_results=rmfield(boot_results,'LC_behav_loadings');
+    boot_results=rmfield(boot_results,'LC_behav_loadings_boot');
 end
 
 
