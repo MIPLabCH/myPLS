@@ -1,12 +1,9 @@
-% function [std_behav_boot,zscore_behav_boot,pvals_behav_boot,std_img_boot,zscore_img_boot,pvals_img_boot] = ...
-%     myPLS_bootstrap_stats(LC_behav_loadings,LC_behav_loadings_boot,LC_img_loadings,LC_img_loadings_boot,signif_LC)
-
 function boot_stats = myPLS_bootstrap_stats(Ub_vect,Vb_vect,boot_results)
-%
+
 % This function computes the mean, std deviation and confidence intervals
-% across the imaging & behavior loadings obtained with bootstrap resampling
-% (myPLS_bootstrap_loadings.m).
-% bootstrap scores will be computed later, as they depend on the PLS
+% across the imaging & behavior/design loadings obtained with bootstrap 
+% resampling (myPLS_bootstrapping).
+% Bootstrap scores are not computed at this stage, as they depend on the PLS
 % results
 %
 % Inputs:
