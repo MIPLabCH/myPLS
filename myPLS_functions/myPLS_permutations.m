@@ -1,31 +1,33 @@
 function Sp_vect = myPLS_permutations(X,Y,U,grouping,pls_opts)
 
-% This function computed permutation testing over singular values obtained with PLS
-% Rows (subjects) of Y are permuted within each group
+% This function computed permutation testing over singular values obtained
+% with PLS. Rows (subjects) of Y are permuted in each iteration.
 %
 % Inputs:
-% - X          : N x M matrix, N is #subjects, M is #imaging
-% - Y          : N x B matrix, B is #behaviors
-% - U          : B x L matrix, L is #latent components, behavior saliences
-% - grouping   : N x 1 vector, subject grouping (e.g. (diagnosis)
+% - X          : N x M matrix, N is #subjects, M is #imaging variables, 
+%                imaging data (normalized)
+% - Y          : N x B matrix, B is #behavior scores, behavior/design data
+%                (normalized)
+% - U          : B x L matrix, L is #latent components, behavior/design saliences
+% - grouping   : N x 1 vector, subject grouping (e.g. diagnosis)
 %                e.g. [1,1,2] = subjects 1 and 2 belong to group 1,
 %                subject 3 belongs to group 2
 % - pls_opts   : options for the PLS analysis
-%                necessary fields for this function:
+%                Necessary fields for this function:
 %       - .nPerms       : number of permutations
 %       - .grouped_perm : binary variable indicating if groups should be 
-%               considered during the permutations
-%              0 = permutations ignoring grouping
-%              1 = permutations within group
-%       - .grouped_PLS         : binary variable indicating if groups
-%                                should be considered when computing R
-%              0 = PLS will computed over all subjects
-%              1 = R will be constructed by concatenating group-wise
-%                  covariance matrices ( as in conventional behavior PLS)
+%                considered during the permutations
+%                0 = permutations ignoring grouping
+%                1 = permutations within group
+%       - .grouped_PLS  : binary variable indicating if groups
+%                should be considered when computing R
+%                0 = PLS will computed over all subjects
+%                1 = R will be constructed by concatenating group-wise
+%                covariance matrices ( as in conventional behavior PLS)
 %
 % Outputs:
-% - Sp_vect    : matrix with bootstrapping salience values, used to compute
-%                p-values                         
+% - Sp_vect    : L x #permutations matrix, permuted singular values, used to compute
+%                p-values to assess LCs' significance                         
 
 
 % Check that dimensions of X & Y are correct
@@ -35,12 +37,7 @@ end
 
 disp('... Permutations ...')
 for iP = 1:pls_opts.nPerms
-    
-    % Display number of permutations (every 50 samples) - (Dani: my personal
-    % preference is to include a skipped line once in a while)
-    if mod(iP,20) == 0, fprintf('%d ',iP); end
-    if ~mod(iP,200); fprintf('\n'); end
-    
+        
     % Leave X unchanged (no need to permute both X and Y matrices)
     Xp = X; % X is already normalized
     

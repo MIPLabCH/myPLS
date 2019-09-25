@@ -3,7 +3,8 @@ function Yp = myPLS_permuteY(Y,grouping,grouped_perm)
 % This function permutes the Y matrix during permutation testing
 %
 % Inputs:
-% - Y               : N x B vector, N is #subjects, B is #behavior/design scores
+% - Y               : N x B vector, N is #subjects, B is #behavior/design
+%                     scores, behavior/design data (normalized)
 % - grouping        : N x 1 vector, subject grouping (e.g. diagnosis)
 %                     e.g. [1,1,2] = subjects 1 and 2 belong to group 1,
 %                     subject 3 belongs to group 2
@@ -13,7 +14,7 @@ function Yp = myPLS_permuteY(Y,grouping,grouped_perm)
 %                     1 = permutations within group
 %
 % Outputs:
-% - Yp              : N x B vector, permuted behavior/design scores
+% - Yp              : N x B vector, permuted behavior/design data
 
 
 % Set up random number generator

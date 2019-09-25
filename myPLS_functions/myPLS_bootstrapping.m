@@ -75,11 +75,6 @@ all_boot_orders = myPLS_get_boot_orders(pls_opts.nBootstraps,grouping,pls_opts.g
 % Run PLS in each bootstrap sample
 for iB = 1:pls_opts.nBootstraps
     
-    % Display number of bootstraps (every 50 samples) - (Dani: my personal
-    % preference is to include a skipped line once in a while)
-    if mod(iB,20) == 0, fprintf('%d ',iB); end
-    if ~mod(iB,200); fprintf('\n'); end
-    
     % Resampling X
     Xb = X0(all_boot_orders(:,iB),:);
     Xb = myPLS_norm(Xb,grouping,pls_opts.normalization_img);
@@ -118,12 +113,13 @@ for iB = 1:pls_opts.nBootstraps
     Vb_vect(:,:,iB) = Vb;
     
     % Compute bootstrapping PLS scores
-    [Lx,Ly,LC_img_loadings,LC_behav_loadings] = myPLS_get_PLSscores(Xb,Yb,Vb,Ub,grouping,pls_opts);
+    [Lx,Ly,corr_Lx_X,corr_Ly_Y,corr_Lx_Y,corr_Ly_X] = ...
+    myPLS_get_PLS_scores_loadings(Xb,Yb,Vb,Ub,grouping,pls_opts);
     
     boot_results.Lxb(:,:,iB) = Lx;
     boot_results.Lyb(:,:,iB) = Ly;
-    boot_results.LC_img_loadings_boot(:,:,iB) = LC_img_loadings;
-    boot_results.LC_behav_loadings_boot(:,:,iB) = LC_behav_loadings;
+    boot_results.LC_img_loadings_boot(:,:,iB) = corr_Lx_X;
+    boot_results.LC_behav_loadings_boot(:,:,iB) = corr_Ly_Y;
     
 end
 
