@@ -20,24 +20,24 @@
 %              2 = zscore within groups (default)
 %              3 = std normalization across subjects (no centering)
 %              4 = std normalization within groups (no centering)
-%       - .grouped_PLS         : binary variable indicating if groups
+%       - .grouped_PLS : binary variable indicating if groups
 %                                should be considered when computing R
 %              0 = PLS will computed over all subjects
 %              1 = R will be constructed by concatenating group-wise
 %                  covariance matrices ( as in conventional behavior PLS)
 %       - .grouped_perm : binary variable indicating if groups should be 
-%               considered during the permutations
+%                  considered during the permutations
 %              0 = permutations ignoring grouping
 %              1 = permutations within group
 %       - .grouped_boot : binary variable indicating if groups should be 
-%               considered during bootstrapping
+%              considered during bootstrapping
 %              0 = bootstrapping ignoring grouping
 %              1 = bootstrapping within group
 %       - .boot_procrustes_mod : mode for bootstrapping procrustes transform
 %              1 = standard (rotation computed only on U)
 %              2 = average rotation of U and V
 %       - .save_boot_resampling : binary variable indicating if bootstrap
-%                                  resampling data should be saved or not
+%              resampling data should be saved or not
 %              0 = no saving of bootstrapping resampling data
 %              1 = save bootstrapping resampling data
 %       - .behav_type        : Type of behavioral analysis
@@ -55,7 +55,7 @@
 %                       be displayed as bootstrap ratios in a correlation matrix
 %              'barPlot' for any type of brain data in already vectorized 
 %                       form - results will be displayed as barplots
-%       - .mask_file     : gray matter mask, only required if imagingType='volume'
+%       - .mask_file     : gray matter mask, only required if img_type='volume'
 %       - .BSR_thres : 2x1 vector with negative and positive
 %                          thresholds for bootstrap ratio map visualization,
 %                          only required if imagingType='volume'
@@ -249,4 +249,3 @@ save_opts.hl_stable = 1; % binary variable indicating if stable bootstrap scores
 
 % --- Customized figure size for behavior bar plots ---
 save_opts.fig_pos_behav = [440   606   320   192];
-
