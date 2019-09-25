@@ -1,47 +1,49 @@
 function boot_results = myPLS_bootstrapping(X0,Y0,U,V,grouping,pls_opts)
 
-% 
 % This function computes bootstrap resampling with replacement on X and Y, 
-% with option to either ignore or accounte for diagnostic groups.
+% with option to either ignore or account for groups (e.g. diagnosis).
 % The PLS analysis is re-computed for each bootstrap sample. 
 %
 % Inputs:
-% - X0                   : N x M matrix, N is #subjects, M is #imaging, brain data not normalized!
-% - Y0                   : N x B matrix, B is #behaviors/design-scores, behavior/design data not normalized!
-% - U                    : B x L matrix, L is #latent components, behavior/design saliences
-% - V                    : B x L matrix, imaging saliences
-% - grouping             : N x 1 vector, subject (diagnostic) grouping 
-%                          e.g. [1,1,2] = subjects 1&2 belong to group 1,
-%                          subject 3 belongs to group 2.
-% - pls_opts : options for the PLS analysis
-%                necessary fields for this function:
-%       - .nBootstraps          : number of bootstrap samples
-%       - .grouped_PLS         : binary variable indicating if groups
-%                                should be considered when computing R
+% - X0             : N x M matrix, N is #subjects, M is #imaging,
+%                    brain data (not normalized!)
+% - Y0             : N x B matrix, B is #behaviors/design scores,
+%                    behavior/design data (not normalized!)
+% - U              : B x L matrix, L is #latent components (LCs), 
+%                    behavior/design saliences
+% - V              : B x L matrix, imaging saliences
+% - grouping       : N x 1 vector, subject grouping (e.g. diagnosis)
+%                    e.g. [1,1,2] = subjects 1 and 2 belong to group 1,
+%                    subject 3 belongs to group 2
+% - pls_opts       : options for the PLS analysis
+%                    Necessary fields for this function:
+%       - .nBootstraps : number of bootstrap samples
+%       - .grouped_PLS : binary variable indicating if groups
+%                        should be considered when computing R
 %              0 = PLS will computed over all subjects
 %              1 = R will be constructed by concatenating group-wise
-%                  covariance matrices ( as in conventional behavior PLS)
+%                  covariance matrices (as in conventional behavior PLS)
 %       - .grouped_boot : binary variable indicating if groups should be 
-%               considered during bootstrapping
+%                         considered during bootstrapping
 %              0 = bootstrapping ignoring grouping
 %              1 = bootstrapping within group
 %       - .boot_procrustes_mod : mode for bootstrapping procrustes transform
 %              1 = standard (rotation computed only on U)
 %              2 = average rotation of U and V
 %       - .save_boot_resampling: indicator whether to save bootstrap
-%                                  resampling data or not
+%                                resampling data or not
 %              0 = no saving of bootstrapping resampling data
 %              1 = save bootstrapping resampling data
-%       - .normalization_img    : normalization options for FC data
-%       - .normalization_behav  : normalization options for behavior data
+%       - .normalization_img    : normalization options for imaging data
+%       - .normalization_behav  : normalization options for behavior/design data
 %              0 = no normalization
 %              1 = zscore across all subjects
 %              2 = zscore within groups (default)
-%              3 = std normalization across subjects (no centering)
-%              4 = std normalization within groups (no centering)
+%              3 = std normalization (no centering) across subjects 
+%              4 = std normalization (no centering) within groups
 %
 % Outputs:
-% - boot_results : struct containing all resluts from bootstrapping
+% - boot_results : struct containing all results from bootstrapping
 %       - .Ub_vect    : B x S x P matrix, S is #LCs, P is #bootstrap samples,
 %                       bootstrapped behavior saliences for all LCs
 %       - .Vb_vect    : M x S xP matrix, bootstrapped brain saliences for all LCs
@@ -53,7 +55,8 @@ function boot_results = myPLS_bootstrapping(X0,Y0,U,V,grouping,pls_opts)
 %       - .*_lB : lower bound of 95% confidence interval of bootstrapping distributions
 %       - .*_uB : upper bound of 95% confidence interval of bootstrapping distributions
 
-
+% Set up random number generator
+rng(1);
 
 % Check that dimensions of X & Y are correct
 if(size(X0,1) ~= size(Y0,1))
@@ -66,35 +69,35 @@ nGroups = size(unique(grouping),1);
 
 disp('... Bootstrapping ...')
 
-% compute the bootstrapping orders (under consideration of the grouping, if asked for)
+% Compute the bootstrapping orders (under consideration of the grouping, if asked for)
 all_boot_orders = myPLS_get_boot_orders(pls_opts.nBootstraps,grouping,pls_opts.grouped_boot);
 
-
-for iter_boot = 1:pls_opts.nBootstraps
+% Run PLS in each bootstrap sample
+for iB = 1:pls_opts.nBootstraps
     
-    % Display number of Bootstraps (every 50 samples) - (Dani: my personal
+    % Display number of bootstraps (every 50 samples) - (Dani: my personal
     % preference is to include a skipped line once in a while)
-    if mod(iter_boot,20) == 0, fprintf('%d ',iter_boot); end
-    if ~mod(iter_boot,200); fprintf('\n'); end
+    if mod(iB,20) == 0, fprintf('%d ',iB); end
+    if ~mod(iB,200); fprintf('\n'); end
     
     % Resampling X
-    Xb = X0(all_boot_orders(:,iter_boot),:);
+    Xb = X0(all_boot_orders(:,iB),:);
     Xb = myPLS_norm(Xb,grouping,pls_opts.normalization_img);
     
     % Resampling Y
-    Yb = Y0(all_boot_orders(:,iter_boot),:);
+    Yb = Y0(all_boot_orders(:,iB),:);
     Yb = myPLS_norm(Yb,grouping,pls_opts.normalization_behav);
     
-    % Cross-covariance matrix between resampled X and Y
+    % Generate cross-covariance matrix between resampled X and Y
     Rb = myPLS_cov(Xb,Yb,grouping,pls_opts.grouped_PLS);
     
-    % Singular value decomposition of Rp
+    % Singular value decomposition of Rb
     [Ub,~,Vb] = svd(Rb,'econ');
     
     % Procrustas transform (correction for axis rotation/reflection)
     switch pls_opts.boot_procrustes_mod
         case 1
-            % Computed on only U
+            % Computed on U only
             rotatemat_full = rri_bootprocrust(U, Ub);
         case 2
             % Computed on both U and V
@@ -110,41 +113,39 @@ for iter_boot = 1:pls_opts.nBootstraps
     Vb = Vb * rotatemat_full;
     Ub = Ub * rotatemat_full;
     
-    % vectors with all bootstrap samples --> needed for percentile
-    % computation
-    Ub_vect(:,:,iter_boot) = Ub;
-    Vb_vect(:,:,iter_boot) = Vb;
+    % Vectors with all bootstrap samples -> needed for percentile computation
+    Ub_vect(:,:,iB) = Ub;
+    Vb_vect(:,:,iB) = Vb;
     
-    % compute bootstrapping PLS scores
+    % Compute bootstrapping PLS scores
     [Lx,Ly,LC_img_loadings,LC_behav_loadings] = myPLS_get_PLSscores(Xb,Yb,Vb,Ub,grouping,pls_opts);
     
-    boot_results.Lxb(:,:,iter_boot)=Lx;
-    boot_results.Lyb(:,:,iter_boot)=Ly;
-    boot_results.LC_img_loadings_boot(:,:,iter_boot)=LC_img_loadings;
-    boot_results.LC_behav_loadings_boot(:,:,iter_boot)=LC_behav_loadings;
+    boot_results.Lxb(:,:,iB) = Lx;
+    boot_results.Lyb(:,:,iB) = Ly;
+    boot_results.LC_img_loadings_boot(:,:,iB) = LC_img_loadings;
+    boot_results.LC_behav_loadings_boot(:,:,iB) = LC_behav_loadings;
     
 end
 
-% compute bootstrapping statistics
+% Compute bootstrapping statistics
 boot_stats = myPLS_bootstrap_stats(Ub_vect,Vb_vect,boot_results);
 
-% save all the statistics fields in the boot_results (I am coding it like
+% Save all the statistics fields in the boot_results (I am coding it like
 % this to facilitate adding more stats
-fN=fieldnames(boot_stats);
-for iF=1:length(fN)
-    boot_results.(fN{iF})=boot_stats.(fN{iF});
+fN = fieldnames(boot_stats);
+for iF = 1:length(fN)
+    boot_results.(fN{iF}) = boot_stats.(fN{iF});
 end
 
-% save bootstrapping resampling data if asked for
+% Save bootstrapping resampling data if asked for
 if pls_opts.save_boot_resampling
     boot_results.Ub_vect = Ub_vect;
     boot_results.Vb_vect = Vb_vect;
 else
-    boot_results=rmfield(boot_results,'LC_img_loadings_boot');
-    boot_results=rmfield(boot_results,'LC_behav_loadings_boot');
+    boot_results = rmfield(boot_results,'LC_img_loadings_boot');
+    boot_results = rmfield(boot_results,'LC_behav_loadings_boot');
 end
 
 
-if mod(iter_boot,200); fprintf('\n'); end
+if mod(iB,200); fprintf('\n'); end
 disp(' ')
-
