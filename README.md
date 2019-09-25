@@ -59,4 +59,4 @@ Download stand-alone repository here: XXXX
 
 
 ### Bugs and questions
-Please contact Daniela Zoller at XXXX or Valeria Kebets at valkebets@gmail.com
+Please contact Daniela Zoller at daniela.zoller@epfl.ch or Valeria Kebets at valkebets@gmail.com
