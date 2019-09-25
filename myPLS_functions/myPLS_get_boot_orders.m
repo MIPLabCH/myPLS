@@ -1,11 +1,11 @@
 function all_boot_orders = myPLS_get_boot_orders(nBootstraps,grouping,grouped_boot)
 
 % This function computes bootstrapping sampling orders for bootstrapping 
-% with resampling
-% Note that if groups are considered for resampling, groups can be not ordered
+% with resampling. Note that if groups are considered for resampling, 
+% groups can be not ordered.
 %
 % Inputs:
-% - nBootstraps     : P, #number of bootstrap samples
+% - nBootstraps     : #bootstrap samples
 % - grouping        : N x 1 vector, subject grouping (e.g., diagnosis)
 % - grouped_boot    : binary variable indicating if groups should be 
 %                     considered during bootstrapping
@@ -13,7 +13,8 @@ function all_boot_orders = myPLS_get_boot_orders(nBootstraps,grouping,grouped_bo
 %                     1 = bootstrapping within group
 %
 % Outputs:
-% - all_boot_orders : N x P, subject index in each bootstrap sample
+% - all_boot_orders : N x bootstrap samples, subject index in bootstrap
+%                     samples
 
 
 % Ignore grouping information if asked for

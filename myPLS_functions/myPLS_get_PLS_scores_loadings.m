@@ -1,12 +1,17 @@
-function [Lx,Ly,LC_img_loadings,LC_behav_loadings] = myPLS_get_PLSscores(X,Y,V,U,grouping,pls_opts)
+function [Lx,Ly,corr_Lx_X,corr_Ly_Y,corr_Lx_Y,corr_Ly_X] = ...
+    myPLS_get_PLS_scores_loadings(X,Y,V,U,grouping,pls_opts)
 
-% This function computes PLS scores & loadings
+% This function computes PLS scores & loadings.
+% Individual-specific PLS scores are subjects' expression of imaging and 
+% behavior/design saliences (covariance patterns).
+% Component-specific PLS loadings express the contribution of original 
+% imaging or behavior/design variables to the latent components (LCs).
 %
 % Inputs:
 % - X           : N x M, N is #subjects, M is #imaging variables, imaging data
 % - Y           : N x B, B is #behavior/design variables, behavior/design data
-% - V           : M x L, L is #latent components (LCs), imaging saliences
-% - U           : B x (L x nGroups), behavior/design saliences
+% - V           : M x L, L is #LCs, imaging saliences
+% - U           : B x (L x #groups), behavior/design saliences
 % - grouping    : N x 1 vector, subject grouping (e.g. diagnosis)
 %                 e.g. [1,1,2] = subjects 1 and 2 belong to group 1,
 %                 subject 3 belongs to group 2
@@ -14,14 +19,14 @@ function [Lx,Ly,LC_img_loadings,LC_behav_loadings] = myPLS_get_PLSscores(X,Y,V,U
 % 
 % Outputs:
 % - Lx          : N x L, PLS imaging scores
-% - Ly          : N x (L x nGroups), PLS behavior/design scores
+% - Ly          : N x (L x #groups), PLS behavior/design scores
 % - corr_Lx_X   : M x L, Pearson's correlation between imaging data and 
-%                 PLS imaging scores (structure coefficients)
-% - corr_Ly_Y   : B x (L x nGroups), Pearson's correlation between behavior/design data
-%                 and PLS behavior/design scores (structure coefficients)
+%                 PLS imaging scores (i.e., structure coefficients)
+% - corr_Ly_Y   : B x (L x #groups), Pearson's correlation between behavior/design data
+%                 and PLS behavior/design scores (i.e. structure coefficients)
 % - corr_Lx_Y   : M x L, Pearson's correlation between 
 %                 behavior/design data and PLS imaging scores
-% - corr_Ly_X   : B x (L x nGroups), Pearson's correlation between 
+% - corr_Ly_X   : B x (L x #groups), Pearson's correlation between 
 %                 behavior/design data and PLS imaging scores
 
 
@@ -48,8 +53,6 @@ nLC = size(V,2);
 Lx = X * V;
 
 % PLS behavior/design scores
-% Dani: I removed the selection depending on the number of groups, I believe
-% it should work like this even for one group
 iter = 1;
 for iG = 1:nGroups
     % Select U for this group
@@ -73,37 +76,11 @@ end
 
 %% Compute PLS loadings
  
-% Pearson's correlations between Lx and X (imaging structure coefficients) 
-% for iLC = 1:4%nLCs
-%     for iImg = 1:nImg
-%         tmpy = Lx(:,iLC);
-%         tmpx = X(:,iImg);
-%         r = corrcoef(tmpx,tmpy.');
-%         LC_img_loadings(iImg,iLC) = r(1,2);
-%         clear tmpy tmpx r
-%     end
-% end
-% Dani: suggestion for faster computation of the identical matrix:
+% Correlations between Lx and X (imaging structure coefficients) 
 corr_Lx_X = corr(Lx,X)';
-% Val: the 2 procedures give me different results (?!)
 
-% Pearson's correlations between Ly and Y (behavior/design structure coefficients) 
-for iLC = 1:nLCs
-    for iB = 1:nBehav
-        tmpy = Ly(:,iLC);
-        tmpx = Y(:,iB);
-        r = corrcoef(tmpx,tmpy.');
-        LC_behav_loadings(iB,iLC) = r(1,2);
-        clear tmpy tmpx r
-    end
-end
-% Dani: suggestion for faster computation of the identical matrix:
-% I believe that these correlations should be computed for each group
-% separately as well, right?
-% Val: yes, those using Ly
-
+% Correlations between Ly and Y (behavior/design structure coefficients) 
 iter = 1;
-
 for iG = 1:nGroups
     idx = iter:iter + nBehav - 1;
     this_groupID = find(grouping == groupIDs(iG));
@@ -111,9 +88,14 @@ for iG = 1:nGroups
     iter = iter + nBehav;
 end
 
-% Pearson's correlations between Lx and Y
+% Correlations between Lx and Y
 corr_Lx_Y = corr(Lx,Y);
 
-% Pearson's correlations between Ly and X
-%%%%% Adapt for groups because using Ly based on U which can be group-specific
-corr_Ly_X = corr(Ly,X);
+% Correlations between Ly and X
+iter = 1;
+for iG = 1:nGroups
+    idx = iter:iter + nBehav - 1;
+    this_groupID = find(grouping == groupIDs(iG));
+    corr_Ly_X(idx,:) = corr(Ly(this_groupID,:),X(this_groupID,:))';
+    iter = iter + nBehav;
+end

@@ -1,7 +1,8 @@
-% writePLStab(fName,mn,lB,uB,colNames_X0)
-function myTable = myPLS_table_loadings(var_type_name,vars_PLS,vars_std,var_names,signif_LC)
+function myPLS_table_loadings(var_type,var_type_name,vars_PLS,vars_std,...
+    vars_lB,vars_uB,save_opts,var_names,signif_LC)
 
-% This function writes a table reporting the loadings & their standard deviation/confidence intervals
+% This function writes a table reporting the loadings & their standard error
+% (standard deviation/confidence intervals)
 %
 % Inputs:
 % - var_type       : string, type of variable plotted (e.g., 'Imaging','Design', 'Behavior')
@@ -16,10 +17,7 @@ function myTable = myPLS_table_loadings(var_type_name,vars_PLS,vars_std,var_name
 %       - .errorbar_mode : 'std' = report standard deviations
 %                          'CI'  = report 95% confidence intervals
 % - var_names      : string, names of variables
-% - signif_LC      : significant LCs to report (e.g. [1,2])
-%
-% Outputs:
-% - myTable        : table reporting loadings & confidence intervals
+% - signif_LC      : significant LCs to consider (e.g. [1,2])
 
 
 rowNames = var_names;
