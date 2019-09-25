@@ -1,24 +1,43 @@
-function Yp = myPLS_permuteY(Y,grouping,consider_groups)
+function Yp = myPLS_permuteY(Y,grouping,grouped_perm)
 
-% remove grouping information if it should not be considered for
+% This function permutes the Y matrix during permutation testing
+%
+% Inputs:
+% - Y               : N x B vector, N is #subjects, B is #behavior/design scores
+% - grouping        : N x 1 vector, subject grouping (e.g. diagnosis)
+%                     e.g. [1,1,2] = subjects 1 and 2 belong to group 1,
+%                     subject 3 belongs to group 2
+% - grouped_perm    : binary variable indicating if groups should be 
+%                     considered during permutation of Y
+%                     0 = permutations ignoring grouping
+%                     1 = permutations within group
+%
+% Outputs:
+% - Yp              : N x B vector, permuted behavior/design scores
+
+
+% Set up random number generator
+rng(1);
+
+% Remove grouping information if it should not be considered for
 % permutations
-if ~consider_groups
-    grouping=ones(size(grouping));
+if ~grouped_perm
+    grouping = ones(size(grouping));
 end
 
-% get number of groups and their indices
-groupIDs=unique(grouping);
-nGroups=length(groupIDs);
+% Get number of groups and their indices
+groupIDs = unique(grouping);
+nGroups = length(groupIDs);
 
 Yp = zeros(size(Y));
 for iG = 1:nGroups
-    groupID=grouping == groupIDs(iG);
+    groupID = find(grouping == groupIDs(iG));   
 
-    % permute subjects of this group
+    % Permute subjects of this group
     thisY = Y(groupID,:);
     perm_order = randperm(size(thisY,1));
     thisYp = thisY(perm_order,:);
 
-    % save permuted subjects in the right places
+    % Save permuted subjects in the right order
     Yp(groupID,:) = thisYp;
 end
