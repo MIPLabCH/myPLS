@@ -1,9 +1,9 @@
 function res = myPLS_analysis(input,pls_opts)
-%
-% PLS analysis (main function)
+
+% This is the main function computing the PLS analysis
 %
 % Inputs:
-%   - input : struct containing input data for the analysis
+% - input : struct containing input data for the analysis
 %       - .brain_data  : N x M matrix, N is #subjects, M is #imaging variables
 %       - .behav_data  : N x B matrix, B is #behaviors
 %       - .grouping    : N x 1 vector, subject grouping for PLS analysis
@@ -11,7 +11,7 @@ function res = myPLS_analysis(input,pls_opts)
 %                               subject 3 belongs to group 2.
 %       - .group_names : Names of the groups (optional)
 %       - .behav_names : Names of the behavior variables (optional) 
-%   - pls_opts : options for the PLS analysis
+% - pls_opts : options for the PLS analysis
 %       - .nPerms              : number of permutations to run
 %       - .nBootstraps         : number of bootstrapping samples to run
 %       - .normalization_img   : normalization options for imaging data
@@ -46,7 +46,6 @@ function res = myPLS_analysis(input,pls_opts)
 %              'contrast' to simply compute contrast between two groups
 %              'contrastBehav' to combine contrast and behavioral measures)
 %              'contrastBehavInteract' to also consider group-by-behavior interaction effects
-
 %
 % Outputs:
 %   - res: Struct containing all results
@@ -169,16 +168,3 @@ res.LC_behav_loadings=LC_behav_loadings;
 %res.Sp_vect=Sp_vect; % do we need to save this?
 res.LC_pvals=LC_pvals;
 res.boot_results=boot_results;
-
-
-
-
-
-
-
-
-
-
-
-
-
