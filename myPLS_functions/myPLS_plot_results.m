@@ -1,9 +1,9 @@
 function myPLS_plot_results(res,save_opts)
 
-% Function to create and save the output plots for PLS analysis
+% This function creates and saves the output plots of the PLS analysis
 %
-% INPUTS:
-%   - res: Struct containing results from PLS - required fields for plots:
+% Inputs:
+% - res: Struct containing results from PLS - required fields for plots:
 %     - .X0, .Y0          : unnormalized input matrices
 %     - .X, .Y            : normalized input matrices
 %     - .design_names     : names of design variables (have only changed in
@@ -27,7 +27,7 @@ function myPLS_plot_results(res,save_opts)
 %           - .*_std : standard deviation of bootstrapping distributions
 %           - .*_lB : lower bound of 95% confidence interval of bootstrapping distributions
 %           - .*_uB : upper bound of 95% confidence interval of bootstrapping distributions
-%   - save_opts: Options for result saving and plotting
+% - save_opts: Options for result saving and plotting
 %       - .output_path   : path where to save the results
 %       - .prefix        : prefix of all results files
 %       - .img_type      : Specify how to plot the results
