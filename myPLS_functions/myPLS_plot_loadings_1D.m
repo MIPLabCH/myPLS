@@ -95,16 +95,12 @@ for iLC = 1:length(signif_LC)
     end
     
     % Create barplot
-    % b = bar(vars_mean(re_order,this_lc),'FaceAlpha',.5); doesn't work on Matlab R2014b
-    b = bar(vars_mean(re_order,this_lc));
-    %b.FaceAlpha = 0.5;
+    b = bar(vars_mean(re_order,this_lc),'FaceAlpha',.5); 
     b.FaceColor = 'flat';
     
-    %b(k).FaceColor = CData(k,:)
-    
-    %for iG = 1:nGroups
-    %    b.CData(iG:nGroups:end,:) = repmat(plot_col(iG,:),size(b.CData,1)/nGroups,1);
-    %end
+    for iG = 1:nGroups
+        b.CData(iG:nGroups:end,:) = repmat(plot_col(iG,:),size(b.CData,1)/nGroups,1);
+    end
     
     % Create scatterplot, if asked for
     if save_opts.plot_boot_samples

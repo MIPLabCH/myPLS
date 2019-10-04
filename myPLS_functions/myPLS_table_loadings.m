@@ -1,7 +1,7 @@
 function myPLS_table_loadings(var_type,var_PLS_type,vars_PLS,vars_std,...
     vars_lB,vars_uB,save_opts,var_names,signif_LC)
 
-% This function writes a csv. file containing a table reporting the 
+% This function writes a .csv file containing a table reporting the 
 % loadings & their standard error (standard deviation/confidence intervals)
 %
 % Inputs:
