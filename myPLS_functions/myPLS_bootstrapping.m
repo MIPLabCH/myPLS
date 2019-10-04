@@ -113,13 +113,13 @@ for iB = 1:pls_opts.nBootstraps
     Vb_vect(:,:,iB) = Vb;
     
     % Compute bootstrapping PLS scores
-    [Lx,Ly,corr_Lx_X,corr_Ly_Y,corr_Lx_Y,corr_Ly_X] = ...
+    [Lxb,Lyb,corr_Lxb_Xb,corr_Lyb_Yb,corr_Lxb_Yb,corr_Lyb_Xb] = ...
     myPLS_get_PLS_scores_loadings(Xb,Yb,Vb,Ub,grouping,pls_opts);
     
-    boot_results.Lxb(:,:,iB) = Lx;
-    boot_results.Lyb(:,:,iB) = Ly;
-    boot_results.LC_img_loadings_boot(:,:,iB) = corr_Lx_X;
-    boot_results.LC_behav_loadings_boot(:,:,iB) = corr_Ly_Y;
+    boot_results.Lxb(:,:,iB) = Lxb;
+    boot_results.Lyb(:,:,iB) = Lyb;
+    boot_results.LC_img_loadings_boot(:,:,iB) = corr_Lxb_Xb;
+    boot_results.LC_behav_loadings_boot(:,:,iB) = corr_Lyb_Yb;
     
 end
 

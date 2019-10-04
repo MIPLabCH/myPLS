@@ -7,11 +7,11 @@ function boot_stats = myPLS_bootstrap_stats(Ub_vect,Vb_vect,boot_results)
 %
 % Inputs:
 % - Ub_vect                 : B x L x P matrix, B is #behavior/design scores, L is #LCs,
-%                  P is #bootstrap samples, bootstrapped behavior/design saliences
+%                             P is #bootstrap samples, bootstrapped behavior/design saliences
 % - Vb_vect                 : M x S x P matrix, bootstrapped imaging saliences
-% - boot_results : struct containing results from bootstrapping
+% - boot_results            : struct containing results from bootstrapping
 %     - .Lxb,.Lyb,.LC_img_loadings_boot,.LC_behav_loadings_boot :
-%               bootstrapping scores (see myPLS_get_PLS_scores_loadings for details)
+%                bootstrapping scores (see myPLS_get_PLS_scores_loadings for details)
 % - LC_behav_loadings_boot  : B x S x P matrix, S is #LCs, P is # bootstrap samples,
 %                             bootstrapped behavior/design loadings
 % - LC_img_loadings_boot    : M x S x P matrix, bootstrapped imaging loadings

@@ -167,6 +167,6 @@ res.Lx = Lx;
 res.Ly = Ly;
 res.LC_img_loadings = LC_img_loadings;
 res.LC_behav_loadings = LC_behav_loadings;
-%res.Sp_vect=Sp_vect; % do we need to save this?
+res.Sp_vect = Sp_vect;
 res.LC_pvals = LC_pvals;
 res.boot_results = boot_results;
