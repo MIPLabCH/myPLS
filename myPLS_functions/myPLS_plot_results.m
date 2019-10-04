@@ -50,82 +50,96 @@ function myPLS_plot_results(res,save_opts)
 %                          scores should be highlighted 
 
 
-% remove grouping information if it should be ignored for plotting
+% Remove grouping information if necessary for plotting
 if ~save_opts.grouped_plots
-    res.grouping=ones(size(res.grouping));
+    res.grouping = ones(size(res.grouping));
 end
 
-% number and IDs of groups
-groupIDs=unique(res.grouping);
-nGroups=length(groupIDs);
+% Number and IDs of groups
+groupIDs = unique(res.grouping);
+nGroups = length(groupIDs);
 
 % number of behavior scores
-nBehav=size(res.Y,2);
+nBehav = size(res.Y,2);
 
-%% find significant latent variables
-signif_LC=find(res.LC_pvals<save_opts.alpha);
+%% Find significant latent components (LCs)
 
-%% plot the brain scores
-disp('... Plotting brain scores ...')
+signif_LC = find(res.LC_pvals < save_opts.alpha);
+
+%% Plot explained variance
+
+myPLS_plot_screeplot(res.S,res.Sp_vect,res.LC_pvals,save_opts);
+
+%% Plot null distribution of significant LCs
+
+myPLS_plot_nulldistrib_Sp(res.S,res.Sp_vect,signif_LC,save_opts);
+
+%% Plot PLS imaging & behavior/design scores
+
+disp('... Plotting brain scores ...');
+
 myPLS_plot_subjScores(res.Lx,res.Ly,res.group_names,res.grouping,signif_LC);
 print(gcf,fullfile(save_opts.output_path,[save_opts.prefix '_corrLxLy']),'-depsc2','-painters');
 disp(' ');
 
-%% plot imaging saliences and loadings
+%% Plot PLS imaging saliences & loadings
+
 switch save_opts.img_type
     case 'volume'
-        disp('... Saving bootstrap ratio maps ...')
-        bootstrap_ratios=res.V./res.boot_results.Vb_std;
+        disp('... Saving bootstrap ratio maps ...');
+        bootstrap_ratios = res.V./res.boot_results.Vb_std;
         myPLS_plot_loadings_3D(bootstrap_ratios,'BSR',signif_LC,...
             save_opts.BSR_thres(2),save_opts.BSR_thres(1),save_opts);
         disp(' ')
         
-        disp('... Saving imaging loading maps ...')
+        disp('... Saving imaging loading maps ...');
         myPLS_plot_loadings_3D(res.LC_img_loadings,'img_loadings',signif_LC,...
             save_opts.load_thres(2),save_opts.load_thres(1),save_opts);
         disp(' ')
+        
     case 'corrMat'
-        disp('... Saving bootstrap ratio matrix ...')
-        bootstrap_ratios=res.V./res.boot_results.Vb_std;
+        disp('... Saving bootstrap ratio matrix ...');
+        bootstrap_ratios = res.V./res.boot_results.Vb_std;
         myPLS_plot_loadings_2D(bootstrap_ratios,'BSR',signif_LC,...
             save_opts.BSR_thres(2),save_opts.BSR_thres(1),save_opts);
         disp(' ')
         
-        disp('... Saving imaging loadings matrix ...')
+        disp('... Saving imaging loadings matrix ...');
         myPLS_plot_loadings_2D(res.LC_img_loadings,'img_loadings',signif_LC,...
             save_opts.load_thres(2),save_opts.load_thres(1),save_opts);
-        disp(' ')
+        disp(' ');
+        
     case 'barPlot'
-        disp('... Saving image salience bar plots ...')
+        disp('... Saving image salience bar plots ...');
         
-        % setup figure position
+        % Set up figure position
         if isfield(save_opts,'fig_pos_img') && ~isempty(save_opts.fig_pos_img)
-            fig_pos=save_opts.fig_pos_img;
+            fig_pos = save_opts.fig_pos_img;
         else
-            fig_pos=[440   378   560   420];
+            fig_pos = [440   378   560   420];
         end
         
-        % plotting saliences
-        % setup vector for scatter plots
+        % Plot saliences
+        % Set up vector for scatter plots
         if isfield(res.boot_results,'Vb_vect')
-            vars_b_vect=res.boot_results.Vb_vect;
+            vars_b_vect = res.boot_results.Vb_vect;
         else
-            vars_b_vect=[];
+            vars_b_vect = [];
         end
-        % calling 1D bar plot function
+        % Call 1D bar plot function
         myPLS_plot_loadings_1D('Imaging','Saliences',res.V,vars_b_vect,...
             res.boot_results.Vb_mean,res.boot_results.Vb_std,...
             res.boot_results.Vb_lB,res.boot_results.Vb_uB,...
             res.img_names,signif_LC,1,fig_pos,save_opts);
         
-        % plotting loadings
-        % setup vector for scatter plots
+        % Plot loadings
+        % Set up vector for scatter plots
         if isfield(res.boot_results,'LC_img_loadings_boot')
-            vars_b_vect=res.boot_results.LC_img_loadings_boot;
+            vars_b_vect = res.boot_results.LC_img_loadings_boot;
         else
-            vars_b_vect=[];
+            vars_b_vect = [];
         end
-        % calling 1D bar plot function
+        % Call 1D bar plot function
         myPLS_plot_loadings_1D('Imaging','Loadings',res.LC_img_loadings,vars_b_vect,...
             res.boot_results.LC_img_loadings_mean,...
             res.boot_results.LC_img_loadings_std,...
@@ -136,64 +150,66 @@ switch save_opts.img_type
 end
 
 
+%% Plot behavior/design saliences & loadings (always as bar plots)
 
-%% plot behavior/design saliences and loadings (always as bar plots)
-disp('... Saving image salience bar plots ...')   
-% setup figure position
+disp('... Saving image salience bar plots ...');
+% Set up figure position
 if isfield(save_opts,'fig_pos_behav') && ~isempty(save_opts.fig_pos_behav)
-    fig_pos=save_opts.fig_pos_behav;
+    fig_pos = save_opts.fig_pos_behav;
 else
-    fig_pos=[440   378   560   420];
+    fig_pos = [440   378   560   420];
 end
 
-% setup variable type ('Behavior' or 'Design')
+% Set up variable type ('Behavior' or 'Design')
 if ~isfield(save_opts,'behav_type') || isempty(save_opts.behav_type)
-    var_type='Design'; % by default we call these variables 'Design'
+    var_type = 'Design'; % by default we call these variables 'Design'
 else
     if strfind(save_opts.behav_type,'contrast')
-        var_type='Design';
+        var_type = 'Design';
     else
         var_type='Behavior';
     end
 end
 
-% set up variable names
-var_names=repmat(res.design_names,nGroups,1);
-tmp=repmat(res.group_names,1,nBehav);
-for ii=1:numel(var_names);var_names{ii}=[var_names{ii} ' (' tmp{ii} ')'];end;
-var_names=var_names(:);
+% Set up variable names
+var_names = repmat(res.design_names,nGroups,1);
+tmp = repmat(res.group_names,1,nBehav);
+for ii = 1:numel(var_names); var_names{ii} = [var_names{ii} ' (' tmp{ii} ')']; end;
+var_names = var_names(:);
 
-% plotting saliences
-% setup vector for scatter plots
+% Plot saliences
+% Set up vector for scatter plots
 if isfield(res.boot_results,'Ub_vect')
-    vars_b_vect=res.boot_results.Ub_vect;
+    vars_b_vect = res.boot_results.Ub_vect;
 else
-    vars_b_vect=[];
+    vars_b_vect = [];
 end
-% calling 1D bar plot function
+
+% Call 1D bar plot function
 myPLS_plot_loadings_1D(var_type,'Saliences',res.U,vars_b_vect,...
     res.boot_results.Ub_mean,res.boot_results.Ub_std,...
     res.boot_results.Ub_lB,res.boot_results.Ub_uB,...
     var_names,signif_LC,nGroups,fig_pos,save_opts);
-        
-        
-% plotting loadings
-% setup vector for scatter plots
+              
+% Plot loadings
+% Set up vector for scatter plots
 if isfield(res.boot_results,'LC_behav_loadings_boot')
-    vars_b_vect=res.boot_results.LC_behav_loadings_boot;
+    vars_b_vect = res.boot_results.LC_behav_loadings_boot;
 else
-    vars_b_vect=[];
+    vars_b_vect = [];
 end
-% calling 1D bar plot function
+
+% Call 1D bar plot function
 myPLS_plot_loadings_1D(var_type,'Loadings',res.LC_behav_loadings,vars_b_vect,...
     res.boot_results.LC_behav_loadings_mean,...
     res.boot_results.LC_behav_loadings_std,...
     res.boot_results.LC_behav_loadings_lB,...
     res.boot_results.LC_behav_loadings_uB,...
     var_names,signif_LC,nGroups,fig_pos,save_opts);
-disp(' ')
+disp(' ');
         
-%% save results struct
-disp('... Saving results ...')
+%% Save results struct
+
+disp('... Saving results ...');
 save(fullfile(save_opts.output_path,[save_opts.prefix '_res']),'res','-v7.3');
 disp(' ');

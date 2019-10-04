@@ -1,4 +1,4 @@
-function myPLS_plot_loadings_1D(var_type,var_type_name,vars_PLS,vars_b_vect,vars_mean,vars_std,...
+function myPLS_plot_loadings_1D(var_type,var_PLS_type,vars_PLS,vars_b_vect,vars_mean,vars_std,...
     vars_lB,vars_uB,var_names,signif_LC,nGroups,fig_pos,save_opts)
 
 % This function plots one-dimensional loadings (e.g. behavior, 1D imaging
@@ -6,7 +6,7 @@ function myPLS_plot_loadings_1D(var_type,var_type_name,vars_PLS,vars_b_vect,vars
 %
 % Inputs:
 % - var_type       : string, type of variable plotted ('Imaging', 'Design' or 'Behavior')
-% - var_type_name  : name of the variable type for y-axis and for filenames
+% - var_PLS_type   : name of the PLS variable type for y-axis and for filenames
 % - vars_PLS       : B x L matrix, B is #variables, L is #components
 % - vars_b_vect    : B x L x P matrix, P is #bootstrap samples
 % - vars_mean      : B x L matrix, bootstrapping mean
@@ -68,7 +68,7 @@ end
 for iLC = 1:length(signif_LC)
     this_lc = signif_LC(iLC);
     
-    file_name = fullfile(save_opts.output_path,[save_opts.prefix '_LC' num2str(this_lc) '_' var_type '_' var_type_name]);
+    file_name = fullfile(save_opts.output_path,[save_opts.prefix '_LC' num2str(this_lc) '_' var_type '_' var_PLS_type]);
     
     figure('position',fig_pos);
     hold on;
@@ -95,7 +95,7 @@ for iLC = 1:length(signif_LC)
     end
     
     % Create barplot
-    b = bar(vars_mean(re_order,this_lc),'FaceAlpha',.5);
+    b = bar(vars_mean(re_order,this_lc),'FaceAlpha',.5); 
     b.FaceColor = 'flat';
     
     for iG = 1:nGroups
@@ -140,13 +140,14 @@ for iLC = 1:length(signif_LC)
     set(gcf,'Color','w');
     xtickangle(45);
     xlabel([var_type ' variables']);
-    ylabel(var_type_name);
-    title(['LC' num2str(this_lc) ' - ' var_type ' ' var_type_name]);
+    ylabel(var_PLS_type);
+    title(['LC' num2str(this_lc) ' - ' var_type ' ' var_PLS_type]);
     
     % Save figure
     saveas(gcf,[file_name '.jpg']);
     
-%     % writing results into a table (does not work yet, but might be
-%     % interesting to add in the future)
-%     writePLStab(fName,mn,lB,uB,colNames_X0)
+    % Write loadings & standard error to table
+    myPLS_table_loadings(var_type,var_PLS_type,vars_PLS,vars_std,...
+    vars_lB,vars_uB,save_opts,var_names,signif_LC)    
+        
 end

@@ -96,6 +96,6 @@ iter = 1;
 for iG = 1:nGroups
     idx = iter:iter + nBehav - 1;
     this_groupID = find(grouping == groupIDs(iG));
-    corr_Ly_X(idx,:) = corr(Ly(this_groupID,:),X(this_groupID,:))';
+    corr_Ly_X(idx,:) = corr(Ly(this_groupID,:),X(this_groupID,:));
     iter = iter + nBehav;
 end
