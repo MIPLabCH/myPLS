@@ -12,7 +12,7 @@ clc; clear all; close all;
 addpath('./myPLS_functions')
 addpath('./RotmanBaycrest')
 addpath('./misc')
-addpath('./spm12')
+%addpath('./spm12')
 
 %% Define all the inputs
 % Modify this script to setup your PLS analysis
@@ -26,7 +26,7 @@ myPLS_inputs
 
 %% Save & plot input data
 
-myPLS_plot_inputs(input,pls_opts,save_opts)
+% myPLS_plot_inputs(input,pls_opts,save_opts)
 
 %% Run PLS analysis (including permutation testing and bootstrapping)
 

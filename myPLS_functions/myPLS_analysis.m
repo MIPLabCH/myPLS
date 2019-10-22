@@ -97,7 +97,6 @@ X0 = input.brain_data;
 disp('... Input data information ...')
 disp(['Number of observations (subjects): ' num2str(nSubj)]);
 disp(['Number of brain measures (voxels/connections): ' num2str(nImg)]);
-disp(['Number of behavior measures: ' num2str(nBehav)]);
 disp(['Number of design measures (behavior/contrasts): ' num2str(nDesignScores)]);
 disp(' ')
 
@@ -129,7 +128,7 @@ end
 explCovLC = (diag(S).^2) / sum(diag(S.^2));
 
 % Compute PLS scores & loadings
-[Lx,Ly,LC_img_loadings,LC_behav_loadings] = ...
+[Lx,Ly,corr_Lx_X,corr_Ly_Y,corr_Lx_Y,corr_Ly_X] = ...
     myPLS_get_PLS_scores_loadings(X,Y,V,U,input.grouping,pls_opts);
 
 %% Permutation testing for LC significance
@@ -165,8 +164,8 @@ res.explCovLC = explCovLC;
 res.LC_pvals = LC_pvals;
 res.Lx = Lx;
 res.Ly = Ly;
-res.LC_img_loadings = LC_img_loadings;
-res.LC_behav_loadings = LC_behav_loadings;
+res.LC_img_loadings = corr_Lx_X; %%% can be changed to corr_Ly_X
+res.LC_behav_loadings = corr_Ly_Y; %%% can be changed to corr_Lx_Y
 res.Sp_vect = Sp_vect;
 res.LC_pvals = LC_pvals;
 res.boot_results = boot_results;
