@@ -89,13 +89,13 @@ for iG = 1:nGroups
 end
 
 % Correlations between Lx and Y
-corr_Lx_Y = corr(Lx,Y);
-
-% Correlations between Ly and X
 iter = 1;
 for iG = 1:nGroups
     idx = iter:iter + nBehav - 1;
     this_groupID = find(grouping == groupIDs(iG));
-    corr_Ly_X(idx,:) = corr(Ly(this_groupID,:),X(this_groupID,:));
+    corr_Lx_Y(idx,:) = corr(Lx(this_groupID,:),Y(this_groupID,:))';
     iter = iter + nBehav;
 end
+
+% Correlations between Ly and X
+corr_Ly_X = corr(Ly,X)';

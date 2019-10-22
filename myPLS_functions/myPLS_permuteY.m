@@ -16,10 +16,6 @@ function Yp = myPLS_permuteY(Y,grouping,grouped_perm)
 % Outputs:
 % - Yp              : N x B vector, permuted behavior/design data
 
-
-% Set up random number generator
-rng(1);
-
 % Remove grouping information if it should not be considered for
 % permutations
 if ~grouped_perm

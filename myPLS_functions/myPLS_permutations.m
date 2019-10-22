@@ -29,6 +29,8 @@ function Sp_vect = myPLS_permutations(X,Y,U,grouping,pls_opts)
 % - Sp_vect    : L x #permutations matrix, permuted singular values, used to compute
 %                p-values to assess LCs' significance                         
 
+% Set up random number generator
+rng(1);
 
 % Check that dimensions of X & Y are correct
 if(size(X,1) ~= size(Y,1))
@@ -56,7 +58,8 @@ for iP = 1:pls_opts.nPerms
     Sp = sqrt(sum(Up.^2));
     
     % Keep singular values for sample distribution of singular values
-    Sp_vect(:,iP) = Sp';    
+    Sp_vect(:,iP) = Sp'; 
+    
 end
 
 if mod(iP,200); fprintf('\n'); end

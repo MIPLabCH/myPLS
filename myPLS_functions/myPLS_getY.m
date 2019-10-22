@@ -139,4 +139,4 @@ switch behavMode
         design_names = [contrastName, design_names];
 end
 
-nDesignScores=size(Y0,2);
+nDesignScores = size(Y0,2);
