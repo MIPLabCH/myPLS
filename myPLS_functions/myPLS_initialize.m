@@ -36,17 +36,39 @@ nBehav = size(input.behav_data,2);
 nImg = size(input.brain_data,2);
 
 % Create defaults for group and behavior names, if not specified
+if isfield(input,'group_names') && numel(input.group_names) < nGroups
+    disp('!!! Fewer group names than groups - group names will be replaced by standard naming');
+    input.group_names=[];
+end
 if ~isfield(input,'group_names') || isempty(input.group_names)
     input.group_names = cell(nGroups,1);
     for iG = 1:nGroups
         input.group_names{iG} = ['group ' num2str(groupIDs(iG))];
     end
 end
+if numel(input.group_names) > nGroups
+    disp('!!! More group names than groups - only the first ones will be used:');
+    input.group_names=input.group_names(1:nGroups);
+    for iG=1:nGroups
+        disp(['   group ' num2str(iG) ': "' input.group_names{iG} '"']);
+    end
+end
 
+if isfield(input,'behav_names') && numel(input.behav_names) < nBehav
+    disp('!!! Fewer behavior names than brahvior scores - behavior names will be replaced by standard naming');
+    input.behav_names=[];
+end
 if ~isfield(input,'behav_names') || isempty(input.behav_names)
     input.behav_names = cell(nBehav,1);
     for iB = 1:nBehav
         input.behav_names{iB} = ['behavior ' num2str(iB)];
+    end
+end
+if numel(input.behav_names) > nBehav
+    disp('!!! More behavior names than behavior scores - only the first ones will be used:');
+    input.behav_names=input.behav_names(1:nBehav);
+    for iB=1:nBehav
+        disp(['   behavior ' num2str(iB) ': "' input.behav_names{iB} '"']);
     end
 end
 

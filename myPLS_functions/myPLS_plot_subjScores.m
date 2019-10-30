@@ -28,13 +28,14 @@ for iter_lc = 1:size(signif_LC,1)
     this_lc = signif_LC(iter_lc);
     
     figure('position',[440   541   327   257]);
-    for iG = 1:numel(names_groups)
+    for iG = 1:nGroups
         plot(Lx(grouping==groupIDs(iG),this_lc),...
             Ly(grouping==groupIDs(iG),this_lc),[plot_colors{iG} '.'],'MarkerSize',10);
         hold on
     end
     hold off
     title(['LC' num2str(this_lc) ' - Correlations between imaging and behavioral scores']);
+    
     
     legend(names_groups,'Location','southeast');
     xlabel('Imaging scores');

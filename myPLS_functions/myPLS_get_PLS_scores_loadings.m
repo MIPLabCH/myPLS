@@ -71,7 +71,7 @@ end
 % Stack group-specific behavior/design scores
 for iG = 1:nGroups
     this_groupID = find(grouping == groupIDs(iG));
-    Ly(this_groupID,:) = Lyy(iG,this_groupID,:);
+    Ly(this_groupID,:) = squeeze(Lyy(iG,this_groupID,:));
 end
 
 %% Compute PLS loadings
