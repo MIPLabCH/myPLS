@@ -42,7 +42,7 @@ nGroups = length(groupIDs);
 nBehav = size(Y,2);
 
 % Number of imaging variables
-nImg = size(X,1);  
+%nImg = size(X,2);  
 
 % Number of latent components (LCs)
 nLC = size(V,2); 
