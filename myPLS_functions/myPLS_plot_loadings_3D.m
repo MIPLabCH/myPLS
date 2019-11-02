@@ -44,7 +44,7 @@ for iter_lc = 1:size(signif_LC,1)
     
     % Constrain BSR to mask
     var_3D = zeros(size(mask));
-    var_3D(mask_idx) = var(:,this_lc);
+    var_3D(mask_idx) = var(mask_idx, this_lc);
     Vi = mask_hdr;
     Vi.dt = [spm_type('float32') 0];
     Vi.fname = [file_name '.nii'];
