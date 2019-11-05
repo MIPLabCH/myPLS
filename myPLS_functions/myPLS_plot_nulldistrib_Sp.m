@@ -11,11 +11,12 @@ function myPLS_plot_nulldistrib_Sp(S,Sp_vect,signif_LC,save_opts)
 %       - .output_path : output directory where figures are saved
 %       - .prefix      : prefix of all results files (optional)
 
+S_vect=diag(S);
 
 for iLC = 1:length(signif_LC)
     this_lc = signif_LC(iLC);
     
-    this_S = diag(S(this_lc));
+    this_S = S_vect(this_lc);
     this_Sp_vect = Sp_vect(this_lc,:);
 
     file_name = fullfile(save_opts.output_path,[save_opts.prefix '_LC' num2str(this_lc) '_nullDistribPermutedSingVals']);

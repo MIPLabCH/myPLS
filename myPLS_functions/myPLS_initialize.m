@@ -207,9 +207,18 @@ if strcmp(save_opts.img_type,'volume')
     if ~isfield(save_opts,'mask_file') || isempty(save_opts.mask_file) || ~exist(save_opts.mask_file,'file')
         error('Imaging type volume: specify a valid gray matter mask file!')
     end
-    
     if ~isfield(save_opts,'struct_file') || isempty(save_opts.struct_file) || ~exist(save_opts.struct_file,'file')
         error('Imaging type volume: specify a valid structural file for image background!')
+    end
+    
+    % check if mask dimensionality fits data
+    % Load mask
+    mask_hdr=spm_vol(save_opts.mask_file);
+    mask = spm_read_vols(mask_hdr);
+    mask_idx = logical(mask);
+    nVoxMask=nnz(mask_idx);
+    if nVoxMask ~= nImg
+        error('!!! Invalid gray matter mask: different number of non-zero voxels in mask than in data! The mask should be identical to the mask used for masking brain data (X)')
     end
 end
 
