@@ -129,12 +129,12 @@ pls_opts.nBootstraps = 100;
 
 % --- Data normalization options ---
 % 0: no normalization
-% 1: zscore across all subjects (default)
-% 2: zscore within groups
+% 1: zscore across all subjects
+% 2: zscore within groups (default for grouped PLSC, see Krishnan et al.,2011)
 % 3: std normalization across subjects (no centering)
 % 4: std normalization within groups (no centering)
-pls_opts.normalization_img = 1;
-pls_opts.normalization_behav = 1;
+pls_opts.normalization_img = 2;
+pls_opts.normalization_behav = 2;
 
 % --- PLS grouping option ---
 % 0: PLS will computed over all subjects
