@@ -34,7 +34,7 @@ if contains(behavMode,'contrast')
         % Contrast
         c = zeros(nSubj,1);
         c(group1ID) = -1/nGroup1;
-        c(group1ID) = 1/nGroup2;
+        c(group2ID) = 1/nGroup2;
 
         % Orthonormalize the contrast regressors
         c_orig = c;
