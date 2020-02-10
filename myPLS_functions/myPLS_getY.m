@@ -137,6 +137,9 @@ switch behavMode
         % Combine contrast and behavior
         Y0 = [c,Y0];
         design_names = [contrastName, design_names];
+    otherwise
+        error('The behavior type you entered is not defined')
 end
 
+%% getting number of design scores
 nDesignScores = size(Y0,2);
