@@ -117,7 +117,7 @@ switch behavMode
             Y0 = [];
             for iBeh = 1:length(behav_names)
                 % Behavior data
-                Y0(:,3*iBeh-2) = behaviorData(iBeh);
+                Y0(:,3*iBeh-2) = behaviorData(:,iBeh);
                 
                 % Normalization before calculating interaction
                 Y0(:,3*iBeh-1) = -zscore(Y0(:,3*iBeh-2)); 
