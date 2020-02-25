@@ -103,8 +103,8 @@ disp(' ')
 %% Normalize input data matrices X and Y 
 % (if there is a group contrast in Y, groups won't be considered in any case)
 
-X = myPLS_norm(X0,input.grouping,pls_opts.normalization_img);
-Y = myPLS_norm(Y0,input.grouping,pls_opts.normalization_behav);
+[X,meanX0,stdX0] = myPLS_norm(X0,input.grouping,pls_opts.normalization_img);
+[Y,meanY0,stdY0] = myPLS_norm(Y0,input.grouping,pls_opts.normalization_behav);
 
 %% Cross-covariance matrix
 R = myPLS_cov(X,Y,input.grouping,pls_opts.grouped_PLS);
@@ -140,16 +140,16 @@ LC_pvals = myPLS_get_LC_pvals(Sp_vect,S,pls_opts);
 
 %% Bootstrapping to test stability of PLS loadings
 
-boot_results = myPLS_bootstrapping(X0,Y0,U,V,input.grouping,pls_opts);
-
-% TODO: compute bootstrapping stats and maybe remove the orginal sampling
-% data, depending on the type (or size?) of the data (for voxelwise data,
-% saving the original sampling data would take up too much space)
+boot_results = myPLS_bootstrapping(X0,Y0,U,V,S,input.grouping,pls_opts);
 
 %% Save all result variables in struct
 
 res.X0 = X0;
+res.meanX0=meanX0;
+res.stdX0=stdX0;
 res.Y0 = Y0;
+res.meanY0=meanY0;
+res.stdY0=stdY0;
 res.X = X;
 res.Y = Y;
 res.design_names = design_names;

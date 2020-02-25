@@ -1,4 +1,4 @@
-function X = myPLS_norm(X,grouping,mode)
+function [X, meanX, stdX] = myPLS_norm(X,grouping,mode)
 
 % This function applies normalization on data before running PLS
 %
@@ -31,22 +31,30 @@ nGroups = length(groupIDs);
 
 switch mode
     case 1
+        meanX=mean(X);
+        stdX=std(X);
         X = zscore(X);
     
     case 2
         for iG = 1:nGroups
             idx = find(grouping == groupIDs(iG));
+            meanX(iG,:)=mean(X(idx,:));
+            stdX(iG,:)=std(X(idx,:));
             X(idx,:) = zscore(X(idx,:));
         end
         
     case 3
-        X2 = sqrt(mean(X.^2,1));
+        meanX=mean(X);
+        stdX=sqrt(mean(X.^2,1));
+        X2 = stdX;
         X = X./repmat(X2,[size(X,1) 1]);
     
     case 4
         for iG=1:nGroups
             idx = find(grouping == groupIDs(iG));
-            X2 = sqrt(mean(X(idx,:).^2,1));
+            meanX(iG,:)=mean(X(idx,:));
+            stdX(iG,:)=sqrt(mean(X(idx,:).^2,1));
+            X2 = stdX(iG,:);
             X(idx,:) = X(idx,:)./repmat(X2,[size(X(idx,:),1) 1]);
         end
 end
