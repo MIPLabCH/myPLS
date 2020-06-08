@@ -50,13 +50,9 @@ These scripts and functions are based on myPLS scripts previously
 published on https://miplab.epfl.ch/index.php/software/PLS
 
 
-### Code release
-Download stand-alone repository here: XXXX
-
-
 ### Updates
 •	Release v1.0 (25/09/2019): Initial release of myPLS toolbox
 
 
 ### Bugs and questions
-Please contact Daniela Zoller at daniela.zoller@epfl.ch or Valeria Kebets at valkebets@gmail.com
+Please contact Daniela Zoller at daniela.zoeller@uni-tuebingen.de or Valeria Kebets at valkebets@gmail.com
