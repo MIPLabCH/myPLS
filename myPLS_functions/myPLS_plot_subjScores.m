@@ -1,4 +1,4 @@
-function corr_LxLy = myPLS_plot_subjScores(Lx,Ly,names_groups,grouping,signif_LC)
+function corr_LxLy = myPLS_plot_subjScores(Lx,Ly,names_groups,grouping,signif_LC,save_opts)
 %
 % This function plots the imaging & behavior scores of all significant 
 % latent components (LCs). Subjects' scores are shown according to their 
@@ -30,7 +30,7 @@ for iter_lc = 1:size(signif_LC,1)
     figure('position',[440   541   327   257]);
     for iG = 1:nGroups
         plot(Lx(grouping==groupIDs(iG),this_lc),...
-            Ly(grouping==groupIDs(iG),this_lc),[plot_colors{iG} '.'],'MarkerSize',10);
+            Ly(grouping==groupIDs(iG),this_lc),[plot_colors{iG} '.'],'MarkerSize',20);
         hold on
     end
     hold off
@@ -47,4 +47,5 @@ for iter_lc = 1:size(signif_LC,1)
     corr_LxLy(iter_lc) = corr(Lx(:,this_lc),Ly(:,this_lc));
     disp(['LC' num2str(this_lc) ': r = ' num2str(corr_LxLy(iter_lc),'%0.2f')]);
     
+    print(gcf,fullfile(save_opts.output_path,[save_opts.prefix '_LC' num2str(iter_lc) '_corrLxLy']),'-depsc2','-painters');
 end

@@ -33,9 +33,9 @@ function myPLS_plot_loadings_1D(var_type,var_PLS_type,vars_PLS,vars_b_vect,vars_
 %              1 = plotting cosidering grouping
 
 
-nVars = size(vars_b_vect,1);
+nVars = size(vars_PLS,1);
 nBootstraps = size(vars_b_vect,3);
-nLCs = size(vars_b_vect,2);
+nLCs = size(vars_PLS,2);
 
 nBehav = nVars/nGroups;
 

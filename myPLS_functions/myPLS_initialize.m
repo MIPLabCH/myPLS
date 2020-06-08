@@ -260,4 +260,13 @@ if pls_opts.grouped_PLS ~= save_opts.grouped_plots
     disp('!!! Grouping option for PLS and plotting not identical - make sure that this is what you would like to do!')
 end
 
+
+% Set boot samples plotting according to boot samples saving
+if pls_opts.save_boot_resampling == 0
+    if isfield(save_opts, 'plot_boot_samples') && save_opts.plot_boot_samples == 1
+        disp('!!! Cannot plot boot samples if they are not saved, setting plot_boot_samples to 0!')
+    end
+    save_opts.plot_boot_samples = 0;
+end
+
 disp(' ')

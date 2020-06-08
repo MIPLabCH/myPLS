@@ -78,8 +78,7 @@ myPLS_plot_nulldistrib_Sp(res.S,res.Sp_vect,signif_LC,save_opts);
 
 disp('... Plotting brain scores ...');
 
-myPLS_plot_subjScores(res.Lx,res.Ly,res.group_names,res.grouping,signif_LC);
-print(gcf,fullfile(save_opts.output_path,[save_opts.prefix '_corrLxLy']),'-depsc2','-painters');
+myPLS_plot_subjScores(res.Lx,res.Ly,res.group_names,res.grouping,signif_LC,save_opts);
 disp(' ');
 
 %% Plot PLS imaging saliences & loadings
@@ -173,9 +172,11 @@ end
 
 % Set up variable names
 var_names = repmat(res.design_names,nGroups,1);
-tmp = repmat(res.group_names,1,nBehav);
-for ii = 1:numel(var_names); var_names{ii} = [var_names{ii} ' (' tmp{ii} ')']; end;
-var_names = var_names(:);
+if save_opts.grouped_plots == 1
+    tmp = repmat(res.group_names,1,nBehav);
+    for ii = 1:numel(var_names); var_names{ii} = [var_names{ii} ' (' tmp{ii} ')']; end;
+    var_names = var_names(:);
+end
 
 % Plot saliences
 % Set up vector for scatter plots
