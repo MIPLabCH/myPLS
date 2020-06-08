@@ -85,9 +85,15 @@ disp(' ');
 
 switch save_opts.img_type
     case 'volume'
-        disp('... Saving bootstrap ratio maps ...');
+        disp('... Saving salience bootstrap ratio maps ...');
         bootstrap_ratios = res.V./res.boot_results.Vb_std;
-        myPLS_plot_loadings_3D(bootstrap_ratios,'BSR',signif_LC,...
+        myPLS_plot_loadings_3D(bootstrap_ratios,'BSR_saliences',signif_LC,...
+            save_opts.BSR_thres(2),save_opts.BSR_thres(1),save_opts);
+        disp(' ')
+        
+        disp('... Saving loading bootstrap ratio maps ...');
+        bootstrap_ratios = res.LC_img_loadings./res.boot_results.LC_img_loadings_std;
+        myPLS_plot_loadings_3D(bootstrap_ratios,'BSR_loadings',signif_LC,...
             save_opts.BSR_thres(2),save_opts.BSR_thres(1),save_opts);
         disp(' ')
         
