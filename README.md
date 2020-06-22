@@ -5,6 +5,8 @@ myPLS toolbox - PLS analysis for medical image processing
 ### Set up
 *Requirements:*
 
+•	Matlab 2017a or higher
+
 •	SPM for saving results onto volume
 
 • Slover to display slice maps
