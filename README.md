@@ -14,6 +14,7 @@ myPLS toolbox - PLS analysis for medical image processing
 • Function ploterr (Copyright (c) 2008, Felix Zoergiebel) for bar plots
 
 *Getting started:*
+
 • Please have a look at the example scripts to get an overview on all setup options and to see how to run the PLS scripts.
 
 • In the 'docu' folder, you will find a documentation that contains a short introduction into the principles of PLS and a few general guidelines for setting up your PLS analysis.
