@@ -48,7 +48,7 @@ if contains(behavMode,'contrast')
         % Grouping vectors
         group1ID = grouping==groupIDs(1);nGroup1=nnz(group1ID);
         group2ID = grouping==groupIDs(2);nGroup2=nnz(group2ID);
-        group3ID = grouping==groupIDs(2);nGroup3=nnz(group3ID);
+        group3ID = grouping==groupIDs(3);nGroup3=nnz(group3ID);
 
         % Contrast
         c = zeros(nSubj,2);
