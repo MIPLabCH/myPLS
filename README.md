@@ -58,4 +58,5 @@ published on https://miplab.epfl.ch/index.php/software/PLS
 •	Release v1.0 (25/09/2019): Initial release of myPLS toolbox
 
 ### Bugs and questions
-Please contact Daniela Zoller at dani.z.science@gmail.com or Valeria Kebets at valkebets@gmail.com
+Please contact Daniela Zoller at dani.z.science@gmail.com or Valeria Kebets at valkebets@gmail.com.
+You can also reach us at the myPLS Slack channel: http://myplstoolbox.slack.com/
