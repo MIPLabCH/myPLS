@@ -78,13 +78,14 @@ for iLC = 1:length(signif_LC)
         max1 = max(abs(vars_lB(:,this_lc)));max2=max(abs(vars_uB(:,this_lc)));maxPatch=max(max1,max2)*1.1;
         
         for iC = 1:nVars % for every component
+            this_iC = find(re_order==iC); % finds the right re-ordering
             if vars_mean(iC,this_lc) < 0
                 if vars_uB(iC,this_lc) < 0 % significant
-                    patch(iC+.5*[1,-1,-1,1],2*maxPatch*[-1,-1,1,1],[1 1 0.8],'edgecolor','none','LineStyle', 'none');
+                    patch(this_iC+.5*[1,-1,-1,1],2*maxPatch*[-1,-1,1,1],[1 1 0.8],'edgecolor','none','LineStyle', 'none');
                 end
             else
                 if vars_lB(iC,this_lc) > 0 % significant
-                    patch(iC+.5*[1,-1,-1,1],2*maxPatch*[-1,-1,1,1],[1 1 0.8],'edgecolor','none','LineStyle', 'none');
+                    patch(this_iC+.5*[1,-1,-1,1],2*maxPatch*[-1,-1,1,1],[1 1 0.8],'edgecolor','none','LineStyle', 'none');
                 end
             end
         end
